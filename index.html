@@ -4,403 +4,249 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Planche de cartes — A4</title>
+<title>Cartes — atelier</title>
 <style>
 :root{
-  --ws:#c7ced6;
-  --ws-deep:#aeb7c1;
-  --ink:#14181e;
-  --ink-2:#5c6774;
-  --ink-3:#8b959f;
-  --paper:#fff;
-  --line:#dde1e6;
+  --ws:#ece4ea;
+  --ink:#2b2230;
+  --ink-2:#6d6172;
+  --ink-3:#a398a6;
+  --line:#e6dde4;
   --mark:#98a2ac;
-  --accent:#d0006f;
-  --accent-soft:rgba(208,0,111,.09);
+  --accent:#e0558f;
+  --accent-soft:rgba(224,85,143,.1);
   --cond:"Avenir Next Condensed","HelveticaNeue-CondensedBold","Roboto Condensed",system-ui,sans-serif;
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
   --round:ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Nunito","Varela Round",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%}
-body{
-  background:var(--ws);
-  color:var(--ink);
-  font-family:var(--sans);
-  font-size:15px;
-  overflow:hidden;
-  overscroll-behavior:none;
-}
+body{background:var(--ws);color:var(--ink);font-family:var(--sans);font-size:15px;overflow:hidden;overscroll-behavior:none}
 button,input,select{font:inherit;color:inherit}
 button{border:0;background:none;padding:0;cursor:pointer}
-
+button:disabled{opacity:.35;cursor:default}
 .app{display:flex;flex-direction:column;height:100%}
 
 /* ---------- barre du haut ---------- */
-.bar{
-  flex:0 0 auto;
-  display:flex;align-items:center;gap:12px;
-  padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;
-  background:var(--ink);color:#fff;
-}
-.bar h1{
-  margin:0;font-family:var(--cond);font-weight:600;
-  font-size:19px;letter-spacing:.06em;text-transform:uppercase;
-}
-.bar .fmt{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
-  color:#8c98a6;margin-top:2px;
-}
+.bar{flex:0 0 auto;display:flex;align-items:center;gap:6px;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:var(--ink);color:#fff}
+.bar h1{margin:0 4px 0 2px;font-family:var(--round);font-weight:800;font-size:18px;white-space:nowrap}
 .bar .grow{flex:1}
-.bar{gap:7px}
-.bar h1{white-space:nowrap}
-.bar .fmt{white-space:nowrap}
-@media (max-width:420px){.bar .fmt{display:none}}
-.bar button{
-  font-family:var(--cond);text-transform:uppercase;letter-spacing:.06em;
-  font-size:13px;font-weight:600;color:#fff;white-space:nowrap;
-  padding:8px 9px;border-radius:3px;background:rgba(255,255,255,.12);
-}
-.bar button.go{background:var(--accent)}
+.tab,.bb{font-family:var(--round);font-weight:700;font-size:14px;color:#fff;white-space:nowrap;
+  padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.1)}
+.tab.on{background:#fff;color:var(--ink)}
+.bb.go{background:var(--accent)}
 
-/* ---------- plan de travail ---------- */
-.stage{
-  flex:1 1 auto;min-height:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:14px;
-  background:
-    radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.5),transparent 60%),
-    var(--ws);
-}
-.wrap{position:relative;flex:0 0 auto}
-.page{
-  position:absolute;left:0;top:0;
-  width:210mm;height:297mm;
-  transform-origin:0 0;
-  background:var(--paper);
-  box-shadow:0 1px 2px rgba(20,24,30,.2),0 10px 26px rgba(20,24,30,.22);
-  -webkit-print-color-adjust:exact;print-color-adjust:exact;
-}
-.page.off{display:none}
-/* repère du bord d'entrée : haut de la feuille */
-.edge{
-  position:absolute;left:0;right:0;top:0;height:10mm;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--cond);text-transform:uppercase;letter-spacing:.22em;
-  font-size:2.4mm;color:var(--ink-3);
-  border-bottom:.2mm dashed #e3e7eb;
-}
+/* ---------- vues ---------- */
+.view{flex:1 1 auto;min-height:0;display:none;flex-direction:column}
+.view.on{display:flex}
+.tb{flex:0 0 auto;padding:10px 12px;background:#fbf8fa;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:8px;min-width:0}
+.scroll{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+select,input[type=text],input[type=number]{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:16px;min-width:0}
+input[type=color]{width:44px;height:38px;padding:2px;border:1px solid var(--line);border-radius:10px;background:#fff;flex:0 0 auto}
+.btn{padding:9px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-family:var(--round);font-weight:700;font-size:14px;white-space:nowrap}
+.btn.acc{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.gh{background:transparent;border-color:transparent;color:var(--ink-2)}
+.btn.warn{color:#c0392b}
+.btn.dng{background:#d64545;border-color:#d64545;color:#fff}
+.meta{font-size:13px;color:var(--ink-2)}
+.meta b{color:var(--ink)}
 
-.slot{position:absolute;touch-action:none;background:transparent}
+/* liste */
+.dgroup{padding:14px 14px 6px;font-family:var(--round);font-weight:800;font-size:14px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.dgroup i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.item{display:flex;align-items:center;gap:12px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line)}
+.item .mini{flex:0 0 auto;position:relative;overflow:hidden;border-radius:4px}
+.item .mini > div{transform-origin:0 0}
+.item .info{flex:1;min-width:0}
+.item .nm1{font-family:var(--round);font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .nm1.empty{color:var(--ink-3);font-weight:600}
+.item .st{font-size:14px;color:var(--ink-2);margin-top:3px}
+.ib{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto}
+.ib.on{background:var(--accent-soft)}
+.empty-list{padding:40px 24px;text-align:center;color:var(--ink-2);line-height:1.5}
+
+/* éditeur */
+.ed{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;background:var(--ws)}
+.ed.on{display:flex}
+.ed,.bar,.tb,.item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ed input,.tb input{-webkit-user-select:text;user-select:text}
+.ed .top{flex:0 0 auto;display:flex;align-items:center;gap:6px;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:var(--ink);color:#fff}
+.ed .pos{flex:1;text-align:center;font-family:var(--round);font-weight:700}
+.ed .pv{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none;overflow:hidden;position:relative}
+.ed .pv .holder{position:relative}
+.ed .pv .holder > div{transform-origin:0 0}
+.ed .lockmsg{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:rgba(43,34,48,.85);color:#fff;
+  font-size:13px;padding:5px 12px;border-radius:999px;display:none;white-space:nowrap}
+.ed.locked .lockmsg{display:block}
+.ed .form{flex:0 0 auto;max-height:52%;overflow:auto;background:#fbf8fa;border-top:1px solid var(--line);
+  padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;flex-direction:column;gap:9px}
+.lab{font-size:12px;color:var(--ink-2);font-family:var(--round);font-weight:700;min-width:74px}
+.stp{display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.stp button{width:38px;height:38px;font-size:20px;font-weight:700;color:var(--accent)}
+.stp b{min-width:26px;text-align:center;font-family:var(--round);font-size:18px}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stats3 > div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{padding:8px 12px;font-family:var(--round);font-weight:700;font-size:14px;color:var(--ink-2)}
+.seg button.on{background:var(--accent);color:#fff}
+input[type=range]{flex:1;accent-color:var(--accent)}
+.ed.locked .form .lk{opacity:.4;pointer-events:none}
+
+/* impression */
+#pages{padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.pw{position:relative;flex:0 0 auto;box-shadow:0 1px 2px rgba(20,24,30,.2),0 10px 26px rgba(20,24,30,.18)}
+.page{position:absolute;left:0;top:0;width:210mm;height:297mm;transform-origin:0 0;background:#fff;overflow:hidden;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+.edge{position:absolute;left:0;right:0;top:0;height:10mm;display:flex;align-items:center;justify-content:center;
+  font-family:var(--round);letter-spacing:.2em;text-transform:uppercase;font-size:2.4mm;color:var(--ink-3);border-bottom:.2mm dashed #eee}
+.slotbox{position:absolute}
+.slotbox .bleed{left:0;top:0}
+.slotbox.used{border:.4mm dashed #d9cfd7;border-radius:1mm;background:repeating-linear-gradient(45deg,#faf6f9,#faf6f9 2mm,#fff 2mm,#fff 4mm)}
+.slotbox.cut::after{content:"";position:absolute;pointer-events:none;border:.2mm dashed rgba(224,85,143,.6)}
+.mark{position:absolute;background:var(--mark)}
+
+/* réglages */
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(43,34,48,.4);display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.sheet .in{width:100%;max-width:560px;max-height:88%;overflow:auto;background:#fff;border-radius:18px 18px 0 0;
+  padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
+.sheet h2{margin:0 0 10px;font-family:var(--round);font-size:18px}
+.sec{margin:16px 0 8px;font-family:var(--round);font-weight:800;font-size:14px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field input,.field select{width:100%}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:40;
+  background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:14px;display:none;max-width:90%;text-align:center}
+.toast.on{display:block}
+
+/* ---------- la carte ---------- */
 .bleed{position:absolute;overflow:hidden;background:#fff}
-.slot.filled::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  border:.2mm dashed rgba(208,0,111,.5);
-}
-.slot .ph{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;
-  border:.4mm dashed #ccd3da;border-radius:1mm;
-  background:#fbfcfd;
-}
-.slot .code{font-family:var(--cond);font-size:5mm;letter-spacing:.08em;color:var(--ink-3)}
-.slot .dim{font-family:var(--mono);font-size:2.4mm;color:#b6bec6}
-.slot img{
-  position:absolute;left:50%;top:50%;
-  display:block;background:#fff;
-  will-change:transform;
-}
-.slot.sel{outline:.6mm solid var(--accent);outline-offset:0}
-.slot.target .ph{border-color:var(--accent);background:var(--accent-soft)}
-.mark{position:absolute;background:var(--mark);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-/* ---------- cartes de jeu ---------- */
 .win{position:absolute;overflow:hidden;background:#fff}
-.win.nophoto{background:#f1f3f5}
+.win img{position:absolute;left:50%;top:50%;display:block;max-width:none;object-fit:cover;will-change:transform}
+.win.nophoto{background:#fff}
 .win .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:var(--cond);text-transform:uppercase;letter-spacing:.12em;font-size:3mm;color:#b6bec6}
+  font-family:var(--round);letter-spacing:.12em;text-transform:uppercase;font-size:3mm;color:#c9bfc7}
 .ov{position:absolute;transform-origin:0 0;pointer-events:none}
-.band{position:absolute;left:0;right:0;top:0;min-height:8.5mm;
-  display:flex;flex-direction:column;justify-content:center;gap:.6mm;padding:1mm 1.6mm;
-  background:rgba(255,255,255,.93);border-bottom:.6mm solid var(--cc)}
-.nm{width:100%;min-width:0;font-family:var(--cond);font-weight:700;font-size:3.9mm;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#14181e}
-.nm .scr{color:#c4cad1;font-weight:500}
-.hearts{display:flex;gap:.4mm;
-  color:var(--cc);font-size:4.4mm;line-height:1;-webkit-text-stroke:.25mm #14181e}
-.stat{position:absolute;bottom:1.5mm;width:14mm;height:14mm;border-radius:50%;
-  background:#fff;border:.9mm solid var(--cc);
+.band{position:absolute;left:0;right:0;top:0;min-height:8.5mm;display:flex;flex-direction:column;justify-content:center;gap:.6mm;
+  padding:1mm 1.6mm;background:rgba(255,255,255,.93);border-bottom:.6mm solid var(--cc)}
+.nm{width:100%;min-width:0;font-family:var(--cond);font-weight:700;font-size:3.9mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#14181e}
+.nm .scr{color:#c9bfc7;font-weight:500}
+.hearts{display:flex;gap:.4mm;color:var(--cc);font-size:4.4mm;line-height:1;-webkit-text-stroke:.25mm #14181e;min-height:4.4mm}
+.stat{position:absolute;bottom:1.5mm;width:14mm;height:14mm;border-radius:50%;background:#fff;border:.9mm solid var(--cc);
   display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
 .stat .ic{display:block;width:6.2mm;height:6.2mm;margin-bottom:-.5mm}
 .stat .n{font-family:var(--cond);font-weight:800;font-size:7mm;color:#14181e;margin-top:.2mm}
 .stat.atk{left:1.5mm}
 .stat.def{right:1.5mm}
 .side{position:absolute;bottom:4mm;left:50%;transform:translateX(-50%)}
-.side.sym{width:10mm;height:10mm;background:none!important;border:0!important;border-radius:50%;background:#fff;border:.6mm solid var(--cc);
-  display:flex;align-items:center;justify-content:center;font-size:5mm;line-height:1;color:#14181e}
-.side.ban{padding:.9mm 2.2mm;border-radius:1mm;font-family:var(--cond);font-weight:800;
-  font-size:2.9mm;letter-spacing:.12em;background:#14181e;color:#fff;border:.4mm solid #14181e}
+.side.sym{width:10mm;height:10mm}
+.side.ban{padding:.9mm 2.2mm;border-radius:1mm;font-family:var(--cond);font-weight:800;font-size:2.9mm;letter-spacing:.12em;
+  background:#14181e;color:#fff;border:.4mm solid #14181e}
 .side.ban.ennemi{background:#fff;color:#14181e}
-/* ---- style mignon ---- */
+.landbig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40mm;line-height:1;color:var(--cc);-webkit-text-stroke:.5mm #14181e}
+.spk{position:absolute;line-height:1;color:#fff;-webkit-text-stroke:.3mm var(--cc);pointer-events:none}
+/* style mignon */
 .bleed.cute{background-image:radial-gradient(circle, rgba(255,255,255,.5) 22%, transparent 25%);background-size:3.4mm 3.4mm;background-position:1.7mm 1.7mm}
 .cute .win{border-radius:3.5mm;border:.8mm solid #fff}
-.cute .win.nophoto{background:#fff}
 .cute .win.landw{background-color:#fff;background-image:radial-gradient(circle, var(--cc2) 18%, transparent 21%);background-size:5mm 5mm}
 .cute .band{left:1.6mm;right:1.6mm;top:1.6mm;border-radius:3mm;border:.6mm solid var(--cc);background:#fff;align-items:center;text-align:center}
 .cute .hearts{justify-content:center}
 .cute .nm{font-family:var(--round);font-weight:800;color:#5a3d55;text-align:center}
-.cute .stat{background:#fff;border:1mm solid var(--cc);box-shadow:inset 0 0 0 .7mm var(--cc2)}
+.cute .stat{border:1mm solid var(--cc);box-shadow:inset 0 0 0 .7mm var(--cc2)}
 .cute .stat .n{font-family:var(--round);font-weight:900;color:#5a3d55}
-.cute .side.sym{border-color:var(--cc)}
 .cute .side.ban{border-radius:3mm;font-family:var(--round);background:var(--cc);border-color:var(--cc)}
 .cute .side.ban.ennemi{background:#fff;color:#5a3d55}
-.cute .landbig{-webkit-text-stroke:.45mm #5a3d55;text-shadow:0 0 0 transparent}
-.spk{position:absolute;line-height:1;color:#fff;-webkit-text-stroke:.3mm var(--cc);pointer-events:none}
-.cute .win .spk{-webkit-text-stroke:.35mm var(--cc);color:#fff}
-.landbig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:40mm;line-height:1;color:var(--cc);-webkit-text-stroke:.5mm #14181e}
-.land{position:absolute;left:50%;bottom:3mm;transform:translateX(-50%);
-  width:22mm;height:22mm;border-radius:50%;background:#fff;border:.9mm solid var(--cc);
-  display:flex;align-items:center;justify-content:center}
-.land span{font-size:14mm;line-height:1;color:var(--cc);-webkit-text-stroke:.35mm #14181e;margin-top:1mm}
-input[type=color]{width:46px;height:38px;padding:2px;border:1px solid var(--line);border-radius:3px;background:#fff;flex:0 0 auto}
-input[type=text]{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:3px;background:#fff;font-size:16px}
-.sec{margin:16px 0 8px;font-family:var(--cond);text-transform:uppercase;letter-spacing:.08em;font-size:14px;border-top:1px solid var(--line);padding-top:12px}
-
-/* ---------- panneau du bas ---------- */
-.dock{
-  flex:0 0 auto;
-  background:#f6f7f9;border-top:1px solid var(--line);
-  padding:10px 12px calc(10px + var(--safe-b));
-}
-.row{display:flex;align-items:center;gap:8px}
-.row + .row{margin-top:9px}
-.meta{
-  font-family:var(--mono);font-size:11px;color:var(--ink-2);
-  letter-spacing:.01em;
-}
-.meta b{color:var(--ink);font-weight:600}
-
-.strip{
-  display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none;
-}
-.strip::-webkit-scrollbar{display:none}
-.thumb{position:relative;flex:0 0 auto;width:58px;height:58px;border-radius:4px;overflow:hidden;background:#e7eaee}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.thumb.on{box-shadow:0 0 0 3px var(--accent)}
-.thumb .x{
-  position:absolute;top:0;right:0;width:20px;height:20px;
-  background:rgba(20,24,30,.6);color:#fff;font-size:12px;line-height:20px;text-align:center;
-  border-bottom-left-radius:4px;
-}
-.add{
-  flex:0 0 auto;width:58px;height:58px;border-radius:4px;
-  border:1px dashed #b6bec6;background:#fff;color:var(--ink-2);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--cond);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
-  text-align:center;line-height:1.15;padding:4px;
-}
-.empty{
-  font-size:13px;color:var(--ink-2);padding:6px 2px;
-}
-
-.btn{
-  font-family:var(--cond);text-transform:uppercase;letter-spacing:.07em;
-  font-size:13px;font-weight:600;
-  padding:9px 11px;border-radius:3px;
-  background:#fff;border:1px solid var(--line);color:var(--ink);
-}
-.btn:active{background:#eceef1}
-.btn.acc{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.gh{background:transparent;border-color:transparent;color:var(--ink-2)}
-.btn.wide{flex:1}
-.btn[disabled]{opacity:.4}
-
-label.lab{
-  font-family:var(--cond);text-transform:uppercase;letter-spacing:.08em;
-  font-size:12px;color:var(--ink-2);
-}
-input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
-input[type=number],select{
-  width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:3px;
-  background:#fff;font-family:var(--mono);font-size:14px;
-}
-input[type=file]{display:none}
-
-/* ---------- réglages ---------- */
-.sheetbg{position:fixed;inset:0;background:rgba(20,24,30,.4);display:none;z-index:9}
-.sheetbg.on{display:block}
-.panel{
-  position:fixed;left:0;right:0;bottom:0;z-index:10;
-  background:#fff;border-top-left-radius:12px;border-top-right-radius:12px;
-  padding:14px 14px calc(14px + var(--safe-b));
-  transform:translateY(101%);transition:transform .22s ease;
-  max-height:88%;overflow:auto;
-}
-.panel.on{transform:none}
-.panel h2{
-  margin:0 0 12px;font-family:var(--cond);text-transform:uppercase;
-  letter-spacing:.08em;font-size:16px;
-}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field{display:flex;flex-direction:column;gap:5px}
-.tip{
-  margin-top:12px;padding:10px 11px;border-left:2px solid var(--accent);
-  background:#faf7f9;font-size:12.5px;line-height:1.45;color:var(--ink-2);
-}
-.tip b{color:var(--ink)}
-.sw{display:flex;align-items:center;gap:9px;font-size:14px}
-.sw input{width:20px;height:20px;accent-color:var(--accent)}
-
-@media (prefers-reduced-motion:reduce){.panel{transition:none}}
+.cute .landbig{-webkit-text-stroke:.45mm #5a3d55}
 
 /* ---------- impression ---------- */
-@page{size:210mm 297mm;margin:0}
+@page{size:A4;margin:0}
 @media print{
-  html,body{width:210mm;height:297mm;background:#fff;overflow:visible}
-  .bar,.dock,.panel,.sheetbg{display:none!important}
-  .app,.stage{display:block;padding:0;margin:0;background:#fff;height:auto}
-  .wrap{width:210mm!important;height:auto!important;position:static}
-  .page{position:relative;left:0;top:0;transform:none!important;box-shadow:none;
-        break-after:page;page-break-after:always;overflow:hidden}
-  .page.off{display:block}
-  .page.empty{display:none}
-  .page.lastp{break-after:auto;page-break-after:auto}
-  .edge{display:none}
-  .slot{outline:0!important;background:transparent}
-  .slot.filled::after{display:none}
-  .slot:not(.filled){display:none}
-  .slot .ph{display:none}
-  .scr,.win .hint{display:none!important}
-  .win.nophoto{background:#fff}
+  html,body{height:auto;overflow:visible;background:#fff}
+  .app{display:block;height:auto}
+  .bar,.tb,.ed,.sheet,.toast,#vlist{display:none!important}
+  #vprint{display:block!important}
+  #vprint .scroll{overflow:visible}
+  #pages{padding:0;display:block}
+  .pw{width:210mm!important;height:297mm!important;box-shadow:none;break-after:page;page-break-after:always;overflow:hidden}
+  .pw:last-child{break-after:auto;page-break-after:auto}
+  .page{transform:none!important}
+  .edge,.scr,.win .hint,.slotbox.used{display:none!important}
+  .slotbox.cut::after{display:none}
 }
 </style>
 </head>
 <body>
 <div class="app">
-
   <div class="bar">
-    <div>
-      <h1>Cartes</h1>
-      <div class="fmt" id="fmt">A4 · 210 × 297</div>
-    </div>
+    <h1>Cartes</h1>
+    <button class="tab on" data-view="list">Mes cartes</button>
+    <button class="tab" data-view="print">Imprimer</button>
     <div class="grow"></div>
-    <button id="btnZoom">Loupe</button>
-    <button id="btnSet" aria-label="Réglages">⚙︎</button>
-    <button class="go" id="btnPrint">Imprimer</button>
+    <button class="bb" id="btnSet" aria-label="Réglages">⚙︎</button>
   </div>
 
-  <div class="stage" id="stage">
-    <div class="wrap" id="wrap">
-      
-    </div>
-  </div>
+  <!-- vue liste -->
+  <section class="view on" id="vlist">
+    <div class="tb" id="listTb"></div>
+    <div class="scroll" id="list"></div>
+  </section>
 
-  <div class="dock">
-    <div class="row" id="pnav"></div>
-    <div class="row"><div class="meta" id="meta"></div></div>
-    <div id="dockBody"></div>
-  </div>
+  <!-- vue impression -->
+  <section class="view" id="vprint">
+    <div class="tb" id="printTb"></div>
+    <div class="scroll" id="pscroll"><div id="pages"></div></div>
+  </section>
 </div>
 
-<input type="file" id="file" accept="image/*,.heic,.heif,.HEIC,.HEIF" multiple>
-
-<div class="sheetbg" id="sheetbg"></div>
-<div class="panel" id="panel">
-  <h2>Réglages de la planche</h2>
-
-  <div class="field" style="margin-bottom:10px">
-    <label class="lab" for="preset">Format de carte</label>
-    <select id="preset">
-      <option value="57x87">Belote — 57 × 87 mm</option>
-      <option value="56x87">Belote étroite — 56 × 87 mm</option>
-      <option value="57x89">Bridge — 57 × 89 mm</option>
-      <option value="63x88">Poker — 63 × 88 mm</option>
-      <option value="61x112">Tarot — 61 × 112 mm</option>
-      <option value="custom">Sur mesure</option>
-    </select>
+<!-- éditeur de carte -->
+<div class="ed" id="ed">
+  <div class="top">
+    <button class="bb" id="edBack">‹ Liste</button>
+    <button class="bb" id="edPrev">◀</button>
+    <div class="pos" id="edPos"></div>
+    <button class="bb" id="edNext">▶</button>
+    <button class="bb" id="edLock">🔓</button>
   </div>
-
-  <div class="grid2">
-    <div class="field"><label class="lab" for="cw">Largeur (mm)</label><input type="number" id="cw" step="0.5" min="20" max="200"></div>
-    <div class="field"><label class="lab" for="ch">Hauteur (mm)</label><input type="number" id="ch" step="0.5" min="20" max="280"></div>
-    <div class="field"><label class="lab" for="gp">Écart (mm)</label><input type="number" id="gp" step="0.5" min="0" max="30"></div>
-    <div class="field"><label class="lab" for="tp">Marge haute (mm)</label><input type="number" id="tp" step="0.5" min="0" max="100"></div>
-  </div>
-
-  <div class="field" style="margin-top:12px">
-    <label class="lab" for="bl">Fond perdu (%)</label>
-    <input type="number" id="bl" step="1" min="0" max="15">
-  </div>
-
-  <div class="sw" style="margin-top:12px">
-    <input type="checkbox" id="mk"><label for="mk">Repères de coupe dans les marges</label>
-  </div>
-
-  <div class="sec">Cartes de jeu</div>
-  <div class="grid2">
-    <div class="field"><label class="lab" for="fr">Épaisseur bordure (mm)</label><input type="number" id="fr" step="0.5" min="0" max="10"></div>
-    <div class="field"><label class="lab" for="mkr">Ami / Ennemi</label>
-      <select id="mkr">
-        <option value="sym">Visage 😊 ami / 😠 ennemi</option>
-        <option value="ban">Bandeau AMI / ENNEMI</option>
-        <option value="none">Aucun</option>
-      </select></div>
-  </div>
-  <div class="field" style="margin-top:12px"><label class="lab" for="sty">Style des cartes</label>
-    <select id="sty"><option value="cute">Mignon (pois, étoiles, coins arrondis)</option><option value="classic">Classique</option></select></div>
-  <div class="sw" style="margin-top:12px">
-    <input type="checkbox" id="lnd"><label for="lnd">Ajouter 10 terrains ♥ à chaque deck</label>
-  </div>
-
-  <div class="field" style="margin-top:12px">
-    <label class="lab" for="cp">Correction d'échelle (%)</label>
-    <input type="number" id="cp" step="0.1" min="80" max="120">
-  </div>
-
-  <div class="tip">
-    <b>Fond perdu.</b> La photo est imprimée 5 % plus grande que la carte et déborde dans les
-    écarts. Le trait rose sur l'aperçu marque la coupe réelle : tout ce qui est dehors part
-    au massicot, donc ne cadrez rien d'important à moins de 2 mm du bord.
-  </div>
-
-  <div class="tip">
-    <b>Calibrer une fois.</b> Imprimez une carte, mesurez sa largeur au réglet.
-    Si vous obtenez 55 mm au lieu de 57, entrez 57 ÷ 55 × 100 ≈ <b>103,6</b> ici.
-    Dans l'aperçu iOS, désactivez toute mise à l'échelle et choisissez A4 sans marges.
-  </div>
-
-  <div class="row" style="margin-top:14px">
-    <button class="btn wide acc" id="btnClose">Terminé</button>
-  </div>
+  <div class="pv" id="pv"><div class="holder" id="holder"></div><div class="lockmsg">🔒 Carte verrouillée</div></div>
+  <div class="form" id="form"></div>
 </div>
+
+<!-- réglages -->
+<div class="sheet" id="sheet"><div class="in" id="sheetIn"></div></div>
+<div class="toast" id="toast"></div>
+<div class="sheet" id="ask" style="z-index:50"><div class="in" style="text-align:center">
+  <div class="msg" style="font-family:var(--round);font-weight:700;font-size:17px;margin:6px 0 16px;line-height:1.4"></div>
+  <div class="row" style="justify-content:center"><button class="btn no" style="flex:1">Annuler</button><button class="btn ok" style="flex:1"></button></div>
+</div></div>
+<input type="file" id="file" accept="image/*,.heic,.heif" hidden>
+<input type="file" id="fileMulti" accept="image/*,.heic,.heif" multiple hidden>
+<input type="file" id="fileImp" accept="application/json,.json" hidden>
 
 <script>
-(function(){
 "use strict";
+var PW = 210, PH = 297, MM = 96/25.4;
+var $ = function(id){ return document.getElementById(id); };
 
-var MM = 96/25.4, PW = 210, PH = 297;
-
-var S = {
-  cardW:57, cardH:87, gap:5, top:10, comp:100, bleed:5, marks:true,
-  photos:[], slots:{}, pages:null, pi:0, active:null, sel:null, cols:0, rows:0, busy:null
-};
-
-/* ---------- decks (coût-force-endurance, xN = exemplaires) ---------- */
+/* ---------- decks prédéfinis (coût-force-endurance, xN = exemplaires) ---------- */
 var DECKS = [
-  {id:"h1", side:"ami",    label:"Héros 1 · Dinosaures",   color:"#ff7aa8", s:"1-2-1x2,2-2-2,3-3-3x2,3-3-2,3-2-3,4-4-5x2,5-5-5"},
-  {id:"h2", side:"ami",    label:"Héros 2 · Chats",        color:"#ffad5c", s:"1-2-1x2,2-2-2x2,3-3-2x2,3-4-3,4-4-4x2,5-3-3"},
-  {id:"h3", side:"ami",    label:"Héros 3 · Dragons",      color:"#b57cf0", s:"1-1-1x2,2-2-1x2,3-2-2x2,4-2-3,4-4-4x2,5-5-5"},
-  {id:"h4", side:"ami",    label:"Héros 4 · Anges & Licornes", color:"#f78fd6", s:"1-2-1x2,2-2-2x2,3-2-2x3,4-3-4x2,5-5-5"},
-  {id:"h5", side:"ami",    label:"Héros 5 · Mer",          color:"#5ab8f0", s:"1-1-1x2,2-2-1x2,3-2-2x2,3-1-3,4-3-3x2,5-5-5"},
+  {id:"h1", side:"ami",    label:"Héros 1 · Dinosaures",        color:"#ff7aa8", s:"1-2-1x2,2-2-2,3-3-3x2,3-3-2,3-2-3,4-4-5x2,5-5-5"},
+  {id:"h2", side:"ami",    label:"Héros 2 · Chats",             color:"#ffad5c", s:"1-2-1x2,2-2-2x2,3-3-2x2,3-4-3,4-4-4x2,5-3-3"},
+  {id:"h3", side:"ami",    label:"Héros 3 · Dragons",           color:"#b57cf0", s:"1-1-1x2,2-2-1x2,3-2-2x2,4-2-3,4-4-4x2,5-5-5"},
+  {id:"h4", side:"ami",    label:"Héros 4 · Anges & Licornes",  color:"#f78fd6", s:"1-2-1x2,2-2-2x2,3-2-2x3,4-3-4x2,5-5-5"},
+  {id:"h5", side:"ami",    label:"Héros 5 · Mer",               color:"#5ab8f0", s:"1-1-1x2,2-2-1x2,3-2-2x2,3-1-3,4-3-3x2,5-5-5"},
   {id:"a1", side:"ennemi", label:"Adversaire 1 · Ours & Forêt", color:"#6cc070", s:"1-1-1x2,2-2-2x2,3-3-3x2,3-3-4,4-2-4,4-4-4,5-5-4"},
   {id:"a2", side:"ennemi", label:"Adversaire 2 · Gobelins & Géants", color:"#c08b5c", s:"1-1-1x2,2-2-1x2,3-2-2x3,4-3-2,4-3-3,5-4-4"},
-  {id:"a3", side:"ennemi", label:"Adversaire 3 · Zombies",  color:"#8e9fb8", s:"1-2-2x2,2-2-2x2,3-2-2x3,4-2-2x2,5-4-3"},
-  {id:"a4", side:"ennemi", label:"Adversaire 4 · Araignées", color:"#7b6fd6", s:"1-1-1x2,2-1-3x2,3-2-3x3,4-2-4,4-4-4,5-5-4"},
-  {id:"a5", side:"ennemi", label:"Adversaire 5 · Chevaliers", color:"#e0a43a", s:"1-2-1x2,2-2-2x2,3-2-2x3,4-2-4x2,5-3-5"}
+  {id:"a3", side:"ennemi", label:"Adversaire 3 · Zombies",      color:"#8e9fb8", s:"1-2-2x2,2-2-2x2,3-2-2x3,4-2-2x2,5-4-3"},
+  {id:"a4", side:"ennemi", label:"Adversaire 4 · Araignées",    color:"#7b6fd6", s:"1-1-1x2,2-1-3x2,3-2-3x3,4-2-4,4-4-4,5-5-4"},
+  {id:"a5", side:"ennemi", label:"Adversaire 5 · Chevaliers",   color:"#e0a43a", s:"1-2-1x2,2-2-2x2,3-2-2x3,4-2-4x2,5-3-5"},
+  // équipes de ティニピン : noms en hiragana, une carte par personnage (coût-force-endurance)
+  {id:"t1", side:"ami", group:"ティニピン", label:"Les amis royaux", color:"#ff8fc8",
+   s:"5-5-5,4-4-4,4-5-3,3-2-4,3-3-3,3-3-2,2-2-2,2-3-1,2-1-3,1-1-2,1-2-1",
+   names:["はちゅぴん","ばろぴん","あざぴん","ちゃちゃぴん","ららぴん","はっぴん","ここぴん","にこぴん","まこぴん","わわぴん","ねねぴん"]}
 ];
 function parseDeck(s){
   var out = [];
@@ -410,39 +256,52 @@ function parseDeck(s){
   });
   return out;
 }
-function deckById(id){ for(var i=0;i<DECKS.length;i++) if(DECKS[i].id===id) return DECKS[i]; return DECKS[0]; }
+function allDecks(){ return DECKS.concat(P.custom || []); }
+function deckById(id){ var L = allDecks(); for(var i=0;i<L.length;i++) if(L[i].id===id) return L[i]; return DECKS[0]; }
+function deckIndex(id){ var L = allDecks(); for(var i=0;i<L.length;i++) if(L[i].id===id) return i; return 99; }
 
-/* mémoire locale : couleurs, camps et noms des cartes (les photos ne sont pas gardées) */
-var LSK = "cartes.jeu.v1";
-var M = { colors:{}, sides:{}, names:{}, frame:3, marker:"sym", lands:true, deck:"h1", style:"cute" };
-try{ var raw = localStorage.getItem(LSK); if(raw){ var o = JSON.parse(raw); for(var k0 in o) M[k0] = o[k0]; } }catch(e){}
-function save(){ try{ localStorage.setItem(LSK, JSON.stringify(M)); }catch(e){} }
+/* ---------- réglages (localStorage) ---------- */
+var PK = "cartes.atelier.v2";
+var P = { cardW:57, cardH:87, gap:5, top:10, bleed:5, comp:100, marks:true,
+          frame:3, marker:"sym", style:"cute", lands:true,
+          colors:{}, sides:{}, names:{}, skip:0, zoom:1, custom:[] };
+var legacyNames = {};
+try{
+  var old = JSON.parse(localStorage.getItem("cartes.jeu.v1") || "null");
+  if(old){
+    ["colors","sides","frame","marker","style","lands"].forEach(function(k){ if(old[k] !== undefined) P[k] = old[k]; });
+    legacyNames = old.names || {};
+  }
+  var cur = JSON.parse(localStorage.getItem(PK) || "null");
+  if(cur) for(var k0 in cur) P[k0] = cur[k0];
+}catch(e){}
+function saveP(){ try{ localStorage.setItem(PK, JSON.stringify(P)); }catch(e){} }
 
+function deckColor(id){ return P.colors[id] || deckById(id).color; }
+function deckSide(id){ return P.sides[id] || deckById(id).side; }
+function deckName(id){ return P.names[id] || deckById(id).label; }
 function rgba(hex, a){
   var h = hex.replace("#",""); if(h.length===3) h = h.replace(/./g,"$&$&");
   var n = parseInt(h,16);
   return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";
 }
-function deckColor(id){ return M.colors[id] || deckById(id).color; }
-function deckSide(id){ return M.sides[id] || deckById(id).side; }
-function nameKey(c){ return c.deck + ":" + (c.land ? "L" : c.idx); }
-function cardName(c){ return M.names[nameKey(c)] || ""; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
+
+/* ---------- dessins ---------- */
 var INK = "#5a3d55";
 var FACE_AMI = '<svg viewBox="0 0 40 40" width="100%" height="100%"><circle cx="20" cy="20" r="17.5" fill="var(--cc)" stroke="'+INK+'" stroke-width="2"/>'
   + '<ellipse cx="10.5" cy="24" rx="3.6" ry="2.3" fill="#fff" opacity=".55"/><ellipse cx="29.5" cy="24" rx="3.6" ry="2.3" fill="#fff" opacity=".55"/>'
   + '<path d="M10.5 18.5 Q14 13.5 17.5 18.5 M22.5 18.5 Q26 13.5 29.5 18.5" fill="none" stroke="'+INK+'" stroke-width="2.6" stroke-linecap="round"/>'
-  + '<path d="M14.5 24.5 Q20 31 25.5 24.5 Z" fill="'+INK+'" stroke="'+INK+'" stroke-width="1.6" stroke-linejoin="round"/>'
-  + '</svg>';
+  + '<path d="M14.5 24.5 Q20 31 25.5 24.5 Z" fill="'+INK+'" stroke="'+INK+'" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 var FACE_ENN = '<svg viewBox="0 0 40 40" width="100%" height="100%"><circle cx="20" cy="20" r="17.5" fill="var(--cc)" stroke="'+INK+'" stroke-width="2"/>'
   + '<path d="M9.5 13.5 L17 16.5 M30.5 13.5 L23 16.5" stroke="'+INK+'" stroke-width="2.6" stroke-linecap="round"/>'
   + '<circle cx="14" cy="20.5" r="2.4" fill="'+INK+'"/><circle cx="26" cy="20.5" r="2.4" fill="'+INK+'"/>'
   + '<path d="M14.5 29 Q20 24.5 25.5 29" fill="none" stroke="'+INK+'" stroke-width="2.6" stroke-linecap="round"/>'
-  + '<path d="M29 4.5 l2 3 M33 6.5 l-1 3.4 M35.5 10 l-3.4 .6" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/>'
-  + '</svg>';
-var HEART = function(x,y,r,fill){ // petit cœur centré en (x,y)
+  + '<path d="M29 4.5 l2 3 M33 6.5 l-1 3.4 M35.5 10 l-3.4 .6" stroke="'+INK+'" stroke-width="1.6" stroke-linecap="round"/></svg>';
+function HEART(x,y,r,fill){
   return '<path d="M'+x+' '+(y+r*.9)+' C'+(x-r*1.6)+' '+(y-r*.1)+' '+(x-r*.9)+' '+(y-r*1.3)+' '+x+' '+(y-r*.45)
     + ' C'+(x+r*.9)+' '+(y-r*1.3)+' '+(x+r*1.6)+' '+(y-r*.1)+' '+x+' '+(y+r*.9)+' Z" fill="'+fill+'" stroke="'+INK+'" stroke-width="1.6" stroke-linejoin="round"/>';
-};
+}
 var ICON_ATK = '<svg viewBox="0 0 40 40" width="100%" height="100%"><g transform="rotate(45 20 20)">'
   + '<path d="M14.5 25 V10 Q14.5 6 20 2 Q25.5 6 25.5 10 V25 Z" fill="#fff" stroke="'+INK+'" stroke-width="2" stroke-linejoin="round"/>'
   + '<path d="M18.5 8.5 V22" stroke="var(--cc)" stroke-width="2.2" stroke-linecap="round" opacity=".6"/>'
@@ -453,176 +312,178 @@ var ICON_DEF = '<svg viewBox="0 0 40 40" width="100%" height="100%">'
   + '<path d="M20 3.5 C25 6.5 29.5 7 34 7 C34 22 29 30.5 20 36.5 C11 30.5 6 22 6 7 C10.5 7 15 6.5 20 3.5 Z" fill="var(--cc)" stroke="'+INK+'" stroke-width="2.2" stroke-linejoin="round"/>'
   + '<path d="M20 8 C23.5 10 27 10.6 29.8 10.8 C29.4 21.5 26 27.5 20 31.8 C14 27.5 10.6 21.5 10.2 10.8 C13 10.6 16.5 10 20 8 Z" fill="none" stroke="#fff" stroke-width="1.6" opacity=".7"/>'
   + HEART(20, 19.5, 4.6, "#fff") + '</svg>';
-function esc(s){ return String(s).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
 
-var Q = { list:[], i:0 };
-function buildQueue(){
-  var d = deckById(M.deck);
-  Q.list = parseDeck(d.s).map(function(c, idx){ return {deck:d.id, idx:idx, land:false, cost:c.cost, f:c.f, e:c.e}; });
-  if(M.lands) for(var k=0;k<10;k++) Q.list.push({deck:d.id, idx:"L"+k, land:true});
-  Q.i = 0;
+/* ---------- stockage des cartes et photos (IndexedDB) ---------- */
+var DB = { db:null, ok:false };
+function idbOpen(){
+  return new Promise(function(res){
+    try{
+      var r = indexedDB.open("cartes-atelier", 1);
+      r.onupgradeneeded = function(){
+        var d = r.result;
+        d.createObjectStore("cards", {keyPath:"id"});
+        d.createObjectStore("photos", {keyPath:"id"});
+      };
+      r.onsuccess = function(){ DB.db = r.result; DB.ok = true; res(); };
+      r.onerror = function(){ res(); };
+    }catch(e){ res(); }
+  });
+}
+function idb(store, mode, fn){
+  if(!DB.ok) return Promise.resolve(null);
+  return new Promise(function(res){
+    try{
+      var t = DB.db.transaction(store, mode), req = fn(t.objectStore(store));
+      t.oncomplete = function(){ res(req ? req.result : null); };
+      t.onerror = t.onabort = function(){ res(null); };
+    }catch(e){ res(null); }
+  });
+}
+function putCard(c){ return idb("cards","readwrite",function(st){ return st.put(c); }); }
+function delCard(id){ return idb("cards","readwrite",function(st){ return st.delete(id); }); }
+
+/* ---------- état ---------- */
+var S = { cards:[], photos:{}, aspect:{}, filter:"all", edit:null, view:"list", selMode:false, sel:{} };
+// proportions réelles des images (pour pouvoir dézoomer sans rogner)
+var aspTimer = null;
+function aspectOf(pid){
+  if(S.aspect[pid]) return S.aspect[pid];
+  if(S.aspect[pid] === undefined && S.photos[pid]){
+    S.aspect[pid] = 0;
+    var im = new Image();
+    im.onload = function(){
+      S.aspect[pid] = im.naturalWidth / im.naturalHeight || 1;
+      clearTimeout(aspTimer); aspTimer = setTimeout(refresh, 30);
+    };
+    im.src = S.photos[pid];
+  }
+  return 0;
+}
+function uid(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function cardById(id){ for(var i=0;i<S.cards.length;i++) if(S.cards[i].id===id) return S.cards[i]; return null; }
+function sorted(list){
+  return list.slice().sort(function(a,b){
+    return (deckIndex(a.deck)-deckIndex(b.deck)) || ((a.land?1:0)-(b.land?1:0))
+        || ((a.land?0:a.cost)-(b.land?0:b.cost)) || (a.order-b.order);
+  });
+}
+function visible(){
+  return sorted(S.cards.filter(function(c){ return S.filter==="all" || c.deck===S.filter; }));
+}
+function newCard(o){
+  var c = { id:uid("c"), deck:o.deck||"h1", land:!!o.land, name:o.name||"", cost:o.cost||1, f:o.f||1, e:o.e||1,
+            photo:null, crop:{dx:0, dy:0, z:1, rot:0}, locked:false, print:true, order:Date.now()+(o.n||0) };
+  S.cards.push(c); putCard(c);
+  return c;
+}
+function genDeck(id, nLands){
+  nLands = nLands || 0;
+  var d = deckById(id), base = d.s ? parseDeck(d.s) : [];
+  base.forEach(function(s, i){
+    newCard({deck:id, cost:s.cost, f:s.f, e:s.e, name:(d.names && d.names[i]) || legacyNames[id+":"+i] || "", n:i});
+  });
+  for(var k=0;k<nLands;k++) newCard({deck:id, land:true, n:100+k});
 }
 
-var $ = function(id){ return document.getElementById(id); };
-var page=null, wrap=$("wrap"), stage=$("stage");
-S.pages=[S.slots];
-
-function fmtN(n){
-  return (Math.round(n*10)/10).toString().replace(".",",");
+/* ---------- photos ---------- */
+function isHeic(f){ return /image\/hei[cf]/i.test(f.type||"") || /\.hei[cf]$/i.test(f.name||""); }
+function loadHeic(){
+  if(window.heic2any) return Promise.resolve(true);
+  return new Promise(function(res){
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
+    s.onload = function(){ res(true); }; s.onerror = function(){ res(false); };
+    document.head.appendChild(s);
+  });
 }
-
-/* ---------- géométrie ---------- */
-function geom(){
-  var f = S.comp/100;
-  var w = S.cardW*f, h = S.cardH*f, g = S.gap*f, t = S.top*f;
-  var cols = Math.max(1, Math.floor((PW + g)/(w + g)));
-  var rows = Math.max(1, Math.floor((PH - t + g)/(h + g)));
-  var gw = cols*w + (cols-1)*g;
-  var gh = rows*h + (rows-1)*g;
-  var b = S.bleed/100;
-  return { w:w, h:h, g:g, t:t, cols:cols, rows:rows,
-           bx:w*b/2, by:h*b/2, gw:gw,
-           x0:(PW-gw)/2, side:(PW-gw)/2, bottom:PH-t-gh };
+function shrink(blob){
+  return createImageBitmap(blob).then(function(bmp){
+    var m = 1400, k = Math.min(1, m/Math.max(bmp.width, bmp.height));
+    var cv = document.createElement("canvas");
+    cv.width = Math.round(bmp.width*k); cv.height = Math.round(bmp.height*k);
+    cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+    return new Promise(function(r){ cv.toBlob(function(b){ r(b || blob); }, "image/jpeg", .88); });
+  });
 }
-
-function codeOf(i,cols){
-  var r = Math.floor(i/cols), c = i % cols;
-  return String.fromCharCode(65+r) + (c+1);
-}
-
-/* ---------- rendu de la feuille ---------- */
-function renderPage(){
-  var G = geom();
-  S.pages[S.pi] = S.slots;
-  if(G.cols !== S.cols || G.rows !== S.rows){
-    S.pages = S.pages.map(function(pg){
-      var kept = {};
-      for(var k in pg){ if(+k < G.cols*G.rows) kept[k] = pg[k]; }
-      return kept;
+function importPhoto(file){
+  return shrink(file).catch(function(){
+    if(!isHeic(file)) return file;
+    toast("Conversion HEIC…");
+    return loadHeic().then(function(ok){
+      if(!ok) return file;
+      return window.heic2any({blob:file, toType:"image/jpeg", quality:.88}).then(function(b){ return shrink(Array.isArray(b)?b[0]:b).catch(function(){ return b; }); });
     });
-    S.slots = S.pages[S.pi];
-    if(S.sel !== null && S.sel >= G.cols*G.rows) S.sel = null;
-    S.cols = G.cols; S.rows = G.rows;
-  }
-
-  wrap.innerHTML = "";
-  var cur = S.slots, curEl = null;
-  for(var p=0;p<S.pages.length;p++){
-    S.slots = S.pages[p];
-    page = document.createElement("div");
-    page.className = "page" + (p===S.pi ? "" : " off") + (Object.keys(S.slots).length ? "" : " empty");
-    wrap.appendChild(page);
-    drawSheet(G, p===S.pi);
-    if(p===S.pi) curEl = page;
-  }
-  S.slots = cur; page = curEl;
-  var total = G.cols*G.rows;
-  renderNav();
-
-  $("fmt").textContent = "A4 · " + G.cols + " × " + G.rows + " cartes";
-  $("meta").innerHTML = S.busy ? S.busy :
-      "<b>" + Object.keys(S.slots).length + "/" + total + "</b> placées"
-    + " · fond perdu <b>" + fmtN(G.bx) + "</b>/<b>" + fmtN(G.by) + "</b>"
-    + " · marges <b>" + fmtN(G.side - G.bx) + "</b> / <b>" + fmtN(G.bottom - G.by) + "</b>";
-  fit();
+  }).then(blobToDataURL).then(function(data){
+    var id = uid("p");
+    S.photos[id] = data;
+    return savePhoto(id, data).then(function(){ return id; });
+  });
+}
+// les images sont gardées en texte (data URL) : c'est le format le plus fiable sur iPhone
+function savePhoto(id, data){
+  return idb("photos","readwrite",function(st){ return st.put({id:id, data:data}); });
+}
+function recData(r){
+  if(r.data) return Promise.resolve(r.data);
+  var b = r.buf ? new Blob([r.buf], {type:r.type || "image/jpeg"}) : r.blob;
+  if(!b) return Promise.reject();
+  return blobToDataURL(b).then(function(d){ savePhoto(r.id, d); return d; }); // ancien format : conversion
+}
+function dropPhotoIfUnused(pid){
+  if(!pid) return;
+  if(S.cards.some(function(c){ return c.photo===pid; })) return;
+  idb("photos","readwrite",function(st){ return st.delete(pid); });
+  delete S.photos[pid]; delete S.aspect[pid];
 }
 
-function drawSheet(G, isCur){
-  var edge = document.createElement("div");
-  edge.className = "edge";
-  edge.style.height = Math.max(G.t, 6) + "mm";
-  edge.textContent = "haut de page";
-  page.appendChild(edge);
-
-  var total = G.cols*G.rows;
-  for(var i=0;i<total;i++){
-    var r = Math.floor(i/G.cols), c = i % G.cols;
-    var x = G.x0 + c*(G.w+G.g), y = G.t + r*(G.h+G.g);
-    var d = S.slots[i];
-
-    var el = document.createElement("div");
-    el.className = "slot" + (d ? " filled" : "") + (isCur && S.sel===i ? " sel" : "")
-                 + (isCur && !d && S.active!==null ? " target" : "");
-    el.dataset.i = i;
-    el.style.cssText = "left:"+x+"mm;top:"+y+"mm;width:"+G.w+"mm;height:"+G.h+"mm";
-
-    if(d && d.card){
-      renderCard(el, d, G);
-    } else if(d){
-      var ph = photoById(d.photoId);
-      var bw = G.w + 2*G.bx, bh = G.h + 2*G.by;
-      var bl = document.createElement("div");
-      bl.className = "bleed";
-      bl.style.cssText = "left:"+(-G.bx)+"mm;top:"+(-G.by)+"mm;width:"+bw+"mm;height:"+bh+"mm";
-      if(ph){
-        var img = document.createElement("img");
-        img.src = ph.url;
-        img.draggable = false;
-        var swap = (d.rot % 180) !== 0;
-        img.style.width  = (swap ? bh : bw) + "mm";
-        img.style.height = (swap ? bw : bh) + "mm";
-        img.style.objectFit = d.fit;
-        img.style.transform = "translate(-50%,-50%) translate("+d.dx+"mm,"+d.dy+"mm) rotate("+d.rot+"deg) scale("+d.z+")";
-        bl.appendChild(img);
-      }
-      el.appendChild(bl);
-    } else {
-      var phd = document.createElement("div");
-      phd.className = "ph";
-      phd.innerHTML = '<span class="code">'+codeOf(i,G.cols)+'</span>'
-                    + '<span class="dim">'+fmtN(S.cardW)+" × "+fmtN(S.cardH)+'</span>';
-      el.appendChild(phd);
-    }
-    page.appendChild(el);
-  }
-
-  if(S.marks) drawMarks(G);
+/* ---------- rendu d'une carte ---------- */
+// f : facteur d'échelle d'impression ; b : fond perdu en mm (bx,by)
+function imgTransform(c, f){
+  var cr = c.crop;
+  return "translate(-50%,-50%) translate("+(cr.dx*f)+"mm,"+(cr.dy*f)+"mm) rotate("+cr.rot+"deg) scale("+cr.z+")";
 }
-
-/* ---------- pages ---------- */
-function goPage(n){
-  S.pages[S.pi] = S.slots;
-  if(n >= S.pages.length) S.pages.push({});
-  S.pi = Math.max(0, n);
-  S.slots = S.pages[S.pi];
-  S.sel = null;
-}
-function renderNav(){
-  var n = S.pages.length;
-  $("pnav").innerHTML =
-      '<button class="btn" data-pg="prev"' + (S.pi===0 ? ' disabled' : '') + '>◀</button>'
-    + '<span class="meta" style="flex:1;text-align:center">Page <b>' + (S.pi+1) + '/' + n + '</b></span>'
-    + '<button class="btn" data-pg="next">' + (S.pi===n-1 ? '+ page' : '▶') + '</button>'
-    + (n > 1 ? '<button class="btn gh" data-pg="del">Suppr. page</button>' : '');
-}
-
-function renderCard(el, d, G){
-  var c = d.card, f = S.comp/100, col = deckColor(c.deck), side = deckSide(c.deck);
-  var T = M.frame*f;
-  var bw = G.w + 2*G.bx, bh = G.h + 2*G.by;
+function cardEl(c, f, bx, by){
+  f = f || 1; bx = bx || 0; by = by || 0;
+  var w = P.cardW*f, h = P.cardH*f, T = P.frame*f;
+  var col = deckColor(c.deck), side = deckSide(c.deck), cute = P.style==="cute";
   var bl = document.createElement("div");
-  bl.className = "bleed" + (M.style==="cute" ? " cute" : "");
-  bl.style.cssText = "left:"+(-G.bx)+"mm;top:"+(-G.by)+"mm;width:"+bw+"mm;height:"+bh+"mm;background-color:"+col;
+  bl.className = "bleed" + (cute ? " cute" : "");
+  bl.style.cssText = "width:"+(w+2*bx)+"mm;height:"+(h+2*by)+"mm;background-color:"+col;
   bl.style.setProperty("--cc", col);
   bl.style.setProperty("--cc2", rgba(col, .16));
 
-  var ww = G.w - 2*T, wh = G.h - 2*T;
+  var ww = w - 2*T, wh = h - 2*T;
   var win = document.createElement("div");
   win.className = "win";
-  win.style.cssText = "left:"+(G.bx+T)+"mm;top:"+(G.by+T)+"mm;width:"+ww+"mm;height:"+wh+"mm";
-  var ph = c.land ? null : photoById(d.photoId);
+  win.style.cssText = "left:"+(bx+T)+"mm;top:"+(by+T)+"mm;width:"+ww+"mm;height:"+wh+"mm";
   if(c.land){
     win.className += " landw";
     win.innerHTML = '<div class="landbig">♥</div>'
-      + (M.style==="cute" ? '<span class="spk" style="left:22%;top:24%;font-size:6mm">✦</span><span class="spk" style="right:20%;top:30%;font-size:4mm">✦</span><span class="spk" style="right:26%;bottom:22%;font-size:5mm">✦</span><span class="spk" style="left:24%;bottom:28%;font-size:3.5mm">✦</span>' : '');
-  } else if(ph){
+      + (cute ? '<span class="spk" style="left:22%;top:24%;font-size:6mm">✦</span><span class="spk" style="right:20%;top:30%;font-size:4mm">✦</span><span class="spk" style="right:26%;bottom:22%;font-size:5mm">✦</span><span class="spk" style="left:24%;bottom:28%;font-size:3.5mm">✦</span>' : '');
+    bl.appendChild(win);
+    return bl;
+  }
+  var url = c.photo && S.photos[c.photo];
+  if(url){
     var img = document.createElement("img");
-    img.src = ph.url; img.draggable = false;
-    var swap = (d.rot % 180) !== 0;
-    img.style.width  = (swap ? wh : ww) + "mm";
-    img.style.height = (swap ? ww : wh) + "mm";
-    img.style.objectFit = d.fit;
-    img.style.transform = "translate(-50%,-50%) translate("+d.dx+"mm,"+d.dy+"mm) rotate("+d.rot+"deg) scale("+d.z+")";
+    img.src = url; img.draggable = false;
+    img.onerror = function(){
+      win.className += " nophoto";
+      win.innerHTML = '<div class="hint" style="text-align:center;line-height:1.4">image illisible<br>à rechoisir</div>';
+    };
+    var swap = (c.crop.rot % 180) !== 0, a = aspectOf(c.photo);
+    if(a){
+      // l'image garde ses proportions et couvre la fenêtre à 100 %
+      var va = swap ? 1/a : a, vw, vh;
+      if(va > ww/wh){ vh = wh; vw = wh*va; } else { vw = ww; vh = ww/va; }
+      img.style.width  = (swap ? vh : vw) + "mm";
+      img.style.height = (swap ? vw : vh) + "mm";
+      img.style.objectFit = "fill";
+    } else {
+      img.style.width  = (swap ? wh : ww) + "mm";
+      img.style.height = (swap ? ww : wh) + "mm";
+    }
+    img.style.transform = imgTransform(c, f);
     win.appendChild(img);
   } else {
     win.className += " nophoto";
@@ -630,492 +491,745 @@ function renderCard(el, d, G){
   }
   bl.appendChild(win);
 
-  // habillage dessiné à la taille nominale puis mis à l'échelle (correction d'impression)
   var ov = document.createElement("div");
   ov.className = "ov";
-  if(c.land){ el.appendChild(bl); return; }
-  ov.style.cssText = "left:"+(G.bx+T)+"mm;top:"+(G.by+T)+"mm;width:"+(S.cardW-2*M.frame)+"mm;height:"+(S.cardH-2*M.frame)+"mm;transform:scale("+f+")";
-  var nm = cardName(c), h = "";
-  h += '<div class="band"><div class="hearts">';
-  for(var k=0;k<c.cost;k++) h += '♥';
-  h += '</div><div class="nm">' + (nm ? esc(nm) : '<span class="scr">Nom…</span>') + '</div></div>';
-  if(c.land){
-    h += '<div class="land"><span>♥</span></div>';
-  } else {
-    h += '<div class="stat atk"><span class="ic">'+ICON_ATK+'</span><span class="n">'+c.f+'</span></div>';
-    h += '<div class="stat def"><span class="ic">'+ICON_DEF+'</span><span class="n">'+c.e+'</span></div>';
-    if(M.style==="cute") h += '<span class="spk" style="right:2.5mm;top:16mm;font-size:4.6mm">✦</span><span class="spk" style="right:6.5mm;top:22mm;font-size:2.8mm">✦</span><span class="spk" style="left:3mm;top:19mm;font-size:3.2mm">✦</span>';
-    if(M.marker==="sym") h += '<div class="side sym">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
-    if(M.marker==="ban") h += '<div class="side ban '+side+'">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
-  }
-  if(c.land && M.marker==="ban") h += '<div class="side ban '+side+'" style="bottom:auto;top:10.5mm">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
-  if(c.land && M.marker==="sym") h += '<div class="side sym" style="bottom:auto;top:10.5mm">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
-  ov.innerHTML = h;
+  ov.style.cssText = "left:"+(bx+T)+"mm;top:"+(by+T)+"mm;width:"+(P.cardW-2*P.frame)+"mm;height:"+(P.cardH-2*P.frame)+"mm;transform:scale("+f+")";
+  var hh = '<div class="band"><div class="hearts">';
+  for(var k=0;k<c.cost;k++) hh += '♥';
+  hh += '</div><div class="nm">' + (c.name ? esc(c.name) : '<span class="scr">Nom…</span>') + '</div></div>';
+  hh += '<div class="stat atk"><span class="ic">'+ICON_ATK+'</span><span class="n">'+c.f+'</span></div>';
+  hh += '<div class="stat def"><span class="ic">'+ICON_DEF+'</span><span class="n">'+c.e+'</span></div>';
+  if(cute) hh += '<span class="spk" style="right:2.5mm;top:16mm;font-size:4.6mm">✦</span><span class="spk" style="right:6.5mm;top:22mm;font-size:2.8mm">✦</span><span class="spk" style="left:3mm;top:19mm;font-size:3.2mm">✦</span>';
+  if(P.marker==="sym") hh += '<div class="side sym">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
+  if(P.marker==="ban") hh += '<div class="side ban '+side+'">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
+  ov.innerHTML = hh;
   bl.appendChild(ov);
-  el.appendChild(bl);
+  return bl;
+}
+function statLine(c){
+  return c.land ? "Terrain ♥" : "♥ " + c.cost + " · ⚔️ " + c.f + " · 🛡️ " + c.e;
 }
 
-function placeDeck(){
-  var G = geom(), n = 0;
-  if(Q.i >= Q.list.length){ flash("Tout le deck est déjà placé (« Reprendre » pour le recommencer).", 4000); return; }
-  while(Q.i < Q.list.length){
-    for(var r=G.rows-1;r>=0;r--){
-      for(var cc=0;cc<G.cols;cc++){
-        var i = r*G.cols + cc;
-        if(S.slots[i] || Q.i >= Q.list.length) continue;
-        S.slots[i] = { photoId:null, dx:0, dy:0, z:1, rot:0, fit:"cover", card:Q.list[Q.i++] };
-        n++;
+/* ---------- vue liste ---------- */
+function renderListTb(){
+  if(S.selMode){ renderSelTb(); return; }
+  var opts = '<option value="all"'+(S.filter==="all"?" selected":"")+'>Tous les decks</option>';
+  allDecks().forEach(function(d){
+    var n = S.cards.filter(function(c){ return c.deck===d.id; }).length;
+    opts += '<option value="'+d.id+'"'+(S.filter===d.id?" selected":"")+'>'+esc(deckName(d.id))+' ('+n+')</option>';
+  });
+  var h = '<div class="row"><select id="flt" style="flex:1">'+opts+'</select>'
+        + '<button class="btn acc" id="addCard">+ Carte</button></div>';
+  if(S.filter !== "all"){
+    var sd = deckSide(S.filter);
+    h += '<div class="row"><input type="text" id="dname" value="'+esc(deckName(S.filter))+'" style="flex:1" placeholder="Nom du deck">'
+       + '<input type="color" id="dcol" value="'+deckColor(S.filter)+'">'
+       + '<button class="btn" id="dside">'+(sd==="ami" ? "😊 Ami" : "😠 Ennemi")+'</button></div>';
+    if(S.filter.charAt(0)==="u" && !deckCount(S.filter))
+      h += '<div class="row"><button class="btn warn" id="ddel" style="flex:1">Supprimer ce deck personnalisé (vide)</button></div>';
+  }
+  var vis = visible(), nPrint = vis.filter(function(c){ return c.print; }).length;
+  h += '<div class="row"><span class="meta" style="flex:1"><b>'+vis.length+'</b> cartes · <b>'+nPrint+'</b> à imprimer</span>'
+     + '<button class="btn gh" id="allPrint">'+(nPrint===vis.length && vis.length ? "Tout décocher" : "Tout cocher")+'</button>'
+     + '<button class="btn" id="gen">＋ Decks…</button></div>';
+  h += '<div class="row"><button class="btn" id="selOn" style="flex:1">☑︎ Sélectionner</button>'
+     + (S.filter!=="all" ? '<button class="btn acc" id="multi" style="flex:1">📷 Ajouter des images</button>' : '') + '</div>';
+  $("listTb").innerHTML = h;
+  $("selOn").onclick = function(){ S.selMode = true; S.sel = {}; renderList(); };
+  if($("multi")) $("multi").onclick = function(){ $("fileMulti").click(); };
+  if($("ddel")) $("ddel").onclick = function(){
+    var id = S.filter;
+    ask("Supprimer le deck « "+deckName(id)+" » ?", "Supprimer", function(){
+      P.custom = (P.custom||[]).filter(function(d){ return d.id!==id; });
+      delete P.colors[id]; delete P.sides[id]; delete P.names[id]; saveP();
+      S.filter = "all"; renderList();
+    }, true);
+  };
+
+  $("flt").onchange = function(){ S.filter = this.value; renderList(); };
+  $("addCard").onclick = function(){
+    var c = newCard({deck: S.filter==="all" ? "h1" : S.filter});
+    renderList(); openEditor(c.id);
+  };
+  if($("dname")){
+    $("dname").oninput = function(){ var v = this.value.trim(); if(v) P.names[S.filter] = v; else delete P.names[S.filter]; saveP(); renderListBody(); };
+    $("dname").onchange = function(){ renderListTb(); };
+    $("dcol").oninput = function(){ P.colors[S.filter] = this.value; saveP(); renderListBody(); };
+    $("dside").onclick = function(){ P.sides[S.filter] = deckSide(S.filter)==="ami" ? "ennemi" : "ami"; saveP(); renderList(); };
+  }
+  $("allPrint").onclick = function(){
+    var vis = visible(), on = !(vis.length && vis.every(function(c){ return c.print; }));
+    vis.forEach(function(c){ c.print = on; putCard(c); });
+    renderList();
+  };
+  $("gen").onclick = openCreate;
+}
+
+/* ---------- création de decks ---------- */
+function deckCount(id){ return S.cards.filter(function(c){ return c.deck===id; }).length; }
+function openCreate(){
+  var chk = {}, side = "ami", nb = 10, base = "", keepNames = false;
+  if(P.landN === undefined) P.landN = P.lands === false ? 0 : 10;
+  var nl = P.landN, nl2 = P.landN;
+  DECKS.forEach(function(d){ chk[d.id] = !deckCount(d.id) && S.filter===d.id; });
+  function draw(){
+    var h = '<h2>Créer des decks</h2>';
+    h += '<div class="sec" style="border:0;margin-top:0;padding-top:0">Decks prêts à jouer (forces déjà réglées)</div>';
+    var grp = "";
+    DECKS.forEach(function(d){
+      var n = deckCount(d.id);
+      if((d.group||"") !== grp){ grp = d.group || ""; h += '<div class="sec">'+esc(grp)+'</div>'; }
+      h += '<label class="row" style="padding:7px 2px;border-bottom:1px solid var(--line)">'
+         + '<input type="checkbox" data-d="'+d.id+'"'+(chk[d.id]?' checked':'')+' style="width:22px;height:22px;accent-color:var(--accent)">'
+         + '<i style="width:12px;height:12px;border-radius:50%;background:'+deckColor(d.id)+';display:inline-block"></i>'
+         + '<span style="flex:1;font-family:var(--round);font-weight:700">'+esc(deckName(d.id))+'</span>'
+         + (n ? '<span class="meta">déjà '+n+' cartes</span>' : '') + '</label>';
+    });
+    var nSel = DECKS.filter(function(d){ return chk[d.id]; }).length;
+    h += '<div class="row" style="margin-top:10px"><span class="lab" style="flex:1">Terrains ♥ par deck</span><div class="stp"><button id="lnM">−</button><b id="lnN">'+nl+'</b><button id="lnP">+</button></div></div>';
+    h += '<div class="row" style="margin-top:10px"><button class="btn gh" id="cAll">'+(nSel===DECKS.length?"Tout décocher":"Tout cocher")+'</button><div style="flex:1"></div>'
+       + '<button class="btn acc" id="cGo"'+(nSel?'':' disabled')+'>Créer '+(nSel>1 ? 'les '+nSel+' decks' : nSel ? 'le deck' : '')+'</button></div>';
+    h += '<div class="sec">Deck personnalisé</div>';
+    h += '<div class="row"><input type="text" id="cuName" placeholder="Nom du deck (ex. Fées)" style="flex:1"><input type="color" id="cuCol" value="#ff9ec4"></div>';
+    h += '<div class="row" style="margin-top:8px"><span class="lab">Camp</span><div class="seg"><button data-side="ami" class="'+(side==="ami"?"on":"")+'">😊 Ami</button><button data-side="ennemi" class="'+(side==="ennemi"?"on":"")+'">😠 Ennemi</button></div></div>';
+    var bopts = '<option value="">Aucune (cartes vides ♥1 ⚔️1 🛡️1)</option>';
+    DECKS.forEach(function(d){ bopts += '<option value="'+d.id+'"'+(base===d.id?' selected':'')+'>Forces de « '+esc(deckName(d.id))+' » ('+parseDeck(d.s).length+')</option>'; });
+    h += '<div class="row" style="margin-top:8px"><span class="lab">Forces</span><select id="cuBase" style="flex:1">'+bopts+'</select></div>';
+    if(base && deckById(base).names)
+      h += '<label class="row meta" style="margin-top:6px"><input type="checkbox" id="cuKeep"'+(keepNames?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Reprendre aussi les noms</label>';
+    h += '<div class="row" style="margin-top:8px"><span class="lab" style="flex:1">'+(base ? 'Créatures à créer' : 'Créatures vides à créer')+'</span><div class="stp"><button id="cuM">−</button><b id="cuN">'+nb+'</b><button id="cuP">+</button></div></div>';
+    h += '<div class="row" style="margin-top:8px"><span class="lab" style="flex:1">Terrains ♥ à créer</span><div class="stp"><button id="cuLM">−</button><b id="cuLN">'+nl2+'</b><button id="cuLP">+</button></div></div>';
+    h += '<div class="row" style="margin-top:8px"><button class="btn acc" id="cuGo" style="flex:1">Créer le deck personnalisé</button></div>';
+    h += '<div class="row" style="margin-top:12px"><div style="flex:1"></div><button class="btn" id="cClose">Fermer</button></div>';
+    $("sheetIn").innerHTML = h;
+
+    $("sheetIn").querySelectorAll("[data-d]").forEach(function(cb){
+      cb.onchange = function(){ chk[cb.dataset.d] = cb.checked; keepCustom(); draw(); };
+    });
+    $("sheetIn").querySelectorAll("[data-side]").forEach(function(b){
+      b.onclick = function(){ side = b.dataset.side; keepCustom(); draw(); };
+    });
+    $("cAll").onclick = function(){ var all = nSel===DECKS.length; DECKS.forEach(function(d){ chk[d.id] = !all; }); keepCustom(); draw(); };
+    $("lnM").onclick = function(){ nl = Math.max(0, nl-1); $("lnN").textContent = nl; P.landN = nl; saveP(); };
+    $("lnP").onclick = function(){ nl = Math.min(30, nl+1); $("lnN").textContent = nl; P.landN = nl; saveP(); };
+    $("cuLM").onclick = function(){ nl2 = Math.max(0, nl2-1); $("cuLN").textContent = nl2; };
+    $("cuLP").onclick = function(){ nl2 = Math.min(30, nl2+1); $("cuLN").textContent = nl2; };
+    $("cuM").onclick = function(){ nb = Math.max(0, nb-1); $("cuN").textContent = nb; };
+    $("cuP").onclick = function(){ nb = Math.min(30, nb+1); $("cuN").textContent = nb; };
+    $("cClose").onclick = closeSheet;
+    $("cuBase").onchange = function(){
+      base = this.value; keepCustom();
+      if(base){ var bd = deckById(base); nb = parseDeck(bd.s).length; if(!draw.col0 || draw.col0==="#ff9ec4") draw.col0 = bd.color; side = bd.side; }
+      draw();
+    };
+    if($("cuKeep")) $("cuKeep").onchange = function(){ keepNames = this.checked; };
+    if(draw.name0 !== undefined){ $("cuName").value = draw.name0; $("cuCol").value = draw.col0; }
+    $("cGo").onclick = function(){
+      var ids = DECKS.filter(function(d){ return chk[d.id]; }).map(function(d){ return d.id; });
+      var again = ids.filter(deckCount);
+      function run(){
+        ids.forEach(function(id){ genDeck(id, nl); });
+        closeSheet();
+        S.filter = ids.length===1 ? ids[0] : "all";
+        renderList();
+        toast(ids.length===1 ? "Deck créé" : ids.length + " decks créés");
       }
-    }
-    if(Q.i < Q.list.length) goPage(S.pi + 1);
+      if(again.length) ask(again.length===1 ? "Ce deck a déjà des cartes : en ajouter de nouvelles quand même ?" : again.length + " de ces decks ont déjà des cartes : en ajouter de nouvelles quand même ?", "Créer", run);
+      else run();
+    };
+    $("cuGo").onclick = function(){
+      var name = $("cuName").value.trim();
+      if(!name){ toast("Donnez un nom au deck."); $("cuName").focus(); return; }
+      var d = { id:uid("u"), label:name, color:$("cuCol").value, side:side, s:"" };
+      P.custom = (P.custom || []).concat([d]); saveP();
+      var bd = base ? deckById(base) : null, st = bd ? parseDeck(bd.s) : [];
+      for(var i=0;i<nb;i++){
+        var o = {deck:d.id, n:i};
+        if(st[i]){ o.cost = st[i].cost; o.f = st[i].f; o.e = st[i].e; }
+        if(keepNames && bd.names && bd.names[i]) o.name = bd.names[i];
+        newCard(o);
+      }
+      for(var k=0;k<nl2;k++) newCard({deck:d.id, land:true, n:100+k});
+      closeSheet();
+      S.filter = d.id; renderList();
+      toast("Deck « "+name+" » créé");
+    };
   }
-  S.sel = null;
-  renderDock(); renderPage();
+  function keepCustom(){ draw.name0 = $("cuName").value; draw.col0 = $("cuCol").value; }
+  draw();
+  $("sheet").classList.add("on");
+}
+function closeSheet(){ $("sheet").classList.remove("on"); }
+function renderListBody(){
+  var box = $("list"), vis = visible();
+  box.innerHTML = "";
+  if(!vis.length){
+    box.innerHTML = '<div class="empty-list">Aucune carte ici.<br>Touchez <b>＋ Decks…</b> pour créer des decks prêts à jouer ou un deck personnalisé, ou <b>+ Carte</b> pour ajouter une carte.</div>';
+    return;
+  }
+  var miniW = 62, k = miniW/(P.cardW*MM), last = null;
+  vis.forEach(function(c){
+    if(c.deck !== last && S.filter==="all"){
+      var g = document.createElement("div");
+      g.className = "dgroup";
+      g.innerHTML = '<i style="background:'+deckColor(c.deck)+'"></i>' + esc(deckName(c.deck));
+      box.appendChild(g);
+      last = c.deck;
+    }
+    var it = document.createElement("div");
+    it.className = "item";
+    var mini = document.createElement("div");
+    mini.className = "mini";
+    mini.style.width = miniW + "px"; mini.style.height = (P.cardH*MM*k) + "px";
+    var ce = cardEl(c); ce.style.transform = "scale("+k+")"; ce.style.position = "absolute";
+    mini.appendChild(ce);
+    var info = document.createElement("div");
+    info.className = "info";
+    info.innerHTML = '<div class="nm1'+(c.name||c.land?"":" empty")+'">'+(c.land ? "Terrain" : (c.name ? esc(c.name) : "Sans nom"))+'</div>'
+      + '<div class="st">'+statLine(c)+(c.photo||c.land ? "" : " · <span style=\"color:var(--accent)\">sans image</span>")+'</div>';
+    var lk = document.createElement("button");
+    lk.className = "ib" + (c.locked ? " on" : ""); lk.textContent = c.locked ? "🔒" : "🔓";
+    lk.title = "Verrouiller";
+    lk.onclick = function(e){ e.stopPropagation(); c.locked = !c.locked; putCard(c); renderListBody(); };
+    var pr = document.createElement("button");
+    pr.className = "ib" + (c.print ? " on" : ""); pr.textContent = c.print ? "🖨️" : "⬜️";
+    pr.title = "À imprimer";
+    pr.onclick = function(e){ e.stopPropagation(); c.print = !c.print; putCard(c); renderListBody(); renderListTb(); };
+    it.appendChild(mini); it.appendChild(info);
+    if(S.selMode){
+      var sb = document.createElement("div");
+      sb.className = "ib" + (S.sel[c.id] ? " on" : "");
+      sb.textContent = c.locked ? "🔒" : (S.sel[c.id] ? "✅" : "⚪️");
+      it.appendChild(sb);
+      if(c.locked) it.style.opacity = ".5";
+      it.onclick = function(){
+        if(c.locked){ toast("Carte verrouillée : déverrouillez-la d'abord."); return; }
+        if(S.sel[c.id]) delete S.sel[c.id]; else S.sel[c.id] = 1;
+        renderList();
+      };
+    } else {
+      it.appendChild(lk); it.appendChild(pr);
+      it.onclick = function(){ openEditor(c.id); };
+    }
+    box.appendChild(it);
+  });
+}
+function renderList(){ renderListTb(); renderListBody(); }
+
+/* ---------- sélection multiple ---------- */
+function selCards(){ return visible().filter(function(c){ return S.sel[c.id] && !c.locked; }); }
+function renderSelTb(){
+  var vis = visible(), free = vis.filter(function(c){ return !c.locked; }), sel = selCards();
+  var nLocked = vis.length - free.length;
+  var h = '<div class="row"><span class="meta" style="flex:1"><b>'+sel.length+'</b> sélectionnée'+(sel.length>1?"s":"")
+        + (nLocked ? ' · '+nLocked+' verrouillée'+(nLocked>1?"s":"")+' ignorée'+(nLocked>1?"s":"") : '') + '</span>'
+        + '<button class="btn gh" id="selAll">'+(sel.length===free.length && free.length ? "Tout désélectionner" : "Tout sélectionner")+'</button></div>';
+  h += '<div class="row"><button class="btn" id="selPhotos" style="flex:1"'+(sel.length?'':' disabled')+'>Retirer les images</button>'
+     + '<button class="btn warn" id="selDel" style="flex:1"'+(sel.length?'':' disabled')+'>Supprimer les cartes</button></div>';
+  h += '<div class="row"><button class="btn acc" id="selOff" style="flex:1">Terminé</button></div>';
+  $("listTb").innerHTML = h;
+  $("selAll").onclick = function(){
+    var all = sel.length===free.length && free.length;
+    S.sel = {}; if(!all) free.forEach(function(c){ S.sel[c.id] = 1; });
+    renderList();
+  };
+  $("selOff").onclick = function(){ S.selMode = false; S.sel = {}; renderList(); };
+  $("selPhotos").onclick = function(){
+    var list = selCards().filter(function(c){ return c.photo; });
+    if(!list.length){ toast("Aucune image sur ces cartes."); return; }
+    ask("Retirer l'image de "+list.length+" carte"+(list.length>1?"s":"")+" ? Les cartes restent.", "Retirer", function(){
+      var old = list.map(function(c){ var p = c.photo; c.photo = null; c.crop = {dx:0, dy:0, z:1, rot:0}; putCard(c); return p; });
+      old.forEach(dropPhotoIfUnused);
+      renderList(); toast(list.length+" image"+(list.length>1?"s":"")+" retirée"+(list.length>1?"s":""));
+    }, true);
+  };
+  $("selDel").onclick = function(){
+    var list = selCards();
+    ask("Supprimer définitivement "+list.length+" carte"+(list.length>1?"s":"")+" ?", "Supprimer", function(){
+      var ids = {}; list.forEach(function(c){ ids[c.id] = 1; });
+      S.cards = S.cards.filter(function(c){ return !ids[c.id]; });
+      list.forEach(function(c){ delCard(c.id); dropPhotoIfUnused(c.photo); });
+      S.sel = {};
+      renderList(); toast(list.length+" carte"+(list.length>1?"s":"")+" supprimée"+(list.length>1?"s":""));
+    }, true);
+  };
 }
 
-function drawMarks(G){
-  var rows = {}, cols = {}, any = false, minR = 1e9, maxR = -1;
-  for(var k in S.slots){
-    var i = +k, r = Math.floor(i/G.cols), c = i % G.cols;
-    rows[r] = 1; cols[c] = 1; any = true;
-    if(r < minR) minR = r;
-    if(r > maxR) maxR = r;
-  }
-  if(!any) return;
+/* ---------- éditeur ---------- */
+var E = { k:1, ptrs:{}, start:null };
+function curList(){ return visible(); }
+function openEditor(id){
+  S.edit = id;
+  $("ed").classList.add("on");
+  renderEditor();
+}
+function closeEditor(){
+  S.edit = null;
+  $("ed").classList.remove("on");
+  renderList();
+}
+function edCard(){ return cardById(S.edit); }
+function renderPreview(){
+  var c = edCard(); if(!c) return;
+  var pv = $("pv"), holder = $("holder");
+  var aw = pv.clientWidth - 24, ah = pv.clientHeight - 24;
+  E.k = Math.min(aw/(P.cardW*MM), ah/(P.cardH*MM));
+  holder.style.width = (P.cardW*MM*E.k) + "px";
+  holder.style.height = (P.cardH*MM*E.k) + "px";
+  holder.innerHTML = "";
+  var ce = cardEl(c); ce.style.transform = "scale("+E.k+")";
+  ce.style.boxShadow = "0 8px 24px rgba(43,34,48,.25)";
+  holder.appendChild(ce);
+}
+function updateImg(){
+  var c = edCard(), img = $("holder").querySelector(".win img");
+  if(c && img) img.style.transform = imgTransform(c, 1);
+  var z = $("zm"); if(z) z.value = c.crop.z;
+}
+function renderEditor(){
+  var c = edCard(); if(!c){ closeEditor(); return; }
+  var list = curList(), i = list.indexOf(c);
+  $("edPos").textContent = (i+1) + " / " + list.length;
+  $("edPrev").disabled = i <= 0;
+  $("edNext").disabled = i >= list.length-1;
+  $("edLock").textContent = c.locked ? "🔒" : "🔓";
+  $("ed").classList.toggle("locked", !!c.locked);
 
-  var L = 4, T = 0.15, PAD = 0.8;
+  var opts = "";
+  allDecks().forEach(function(d){ opts += '<option value="'+d.id+'"'+(d.id===c.deck?" selected":"")+'>'+esc(deckName(d.id))+'</option>'; });
+  function stp(key, label, min, max){
+    return '<div><span class="lab" style="min-width:0">'+label+'</span><div class="stp"><button data-k="'+key+'" data-d="-1">−</button><b>'+c[key]+'</b><button data-k="'+key+'" data-d="1">+</button></div></div>';
+  }
+  var h = '';
+  h += '<div class="row lk"><span class="lab">Type</span><div class="seg"><button data-type="0" class="'+(c.land?"":"on")+'">Créature</button><button data-type="1" class="'+(c.land?"on":"")+'">Terrain ♥</button></div></div>';
+  if(!c.land){
+    h += '<div class="row lk"><span class="lab">Nom</span><input type="text" id="cname" style="flex:1" placeholder="Nom de la carte" value="'+esc(c.name)+'"></div>';
+    h += '<div class="stats3 lk">' + stp("cost","♥ Coût",0,9) + stp("f","⚔️ Force",0,9) + stp("e","🛡️ Endurance",0,9) + '</div>';
+    h += '<div class="row lk" style="flex-wrap:wrap"><span class="lab">Image</span><button class="btn acc" id="pick">'+(c.photo ? "Changer" : "Choisir une image")+'</button>'
+       + (c.photo ? '<button class="btn" id="rot">↻</button><button class="btn" id="recenter">Recentrer</button><button class="btn gh" id="nophoto">Retirer</button>' : '') + '</div>';
+    if(c.photo){
+      h += '<div class="row lk"><span class="lab">Zoom</span><button class="btn" id="zout">−</button>'
+         + '<input type="range" id="zm" min="0.3" max="4" step="0.01" value="'+c.crop.z+'">'
+         + '<button class="btn" id="zin">+</button></div>';
+      h += '<div class="meta lk">Glissez l\'image pour la cadrer, pincez pour zoomer. En dessous de 100 %, l\'image entière apparaît.</div>';
+    }
+  }
+  h += '<div class="row lk"><span class="lab">Deck</span><select id="cdeck" style="flex:1">'+opts+'</select></div>';
+  h += '<div class="row"><button class="btn" id="print">'+(c.print ? "🖨️ À imprimer" : "⬜️ Ne pas imprimer")+'</button>'
+     + '<div style="flex:1"></div><button class="btn lk" id="dup">Dupliquer</button><button class="btn warn lk" id="del">Supprimer</button></div>';
+  $("form").innerHTML = h;
+  renderPreview();
+
+  var F = $("form");
+  F.querySelectorAll("[data-type]").forEach(function(b){
+    b.onclick = function(){ c.land = b.dataset.type==="1"; save(); renderEditor(); };
+  });
+  F.querySelectorAll(".stp button").forEach(function(b){
+    b.onclick = function(){
+      var k = b.dataset.k; c[k] = Math.max(0, Math.min(9, c[k] + (+b.dataset.d)));
+      b.parentNode.querySelector("b").textContent = c[k];
+      save(); renderPreview();
+    };
+  });
+  if($("cname")) $("cname").oninput = function(){ c.name = this.value; save(); renderPreview(); };
+  $("cdeck").onchange = function(){ c.deck = this.value; save(); renderEditor(); };
+  if($("pick")) $("pick").onclick = function(){ $("file").click(); };
+  if($("rot")) $("rot").onclick = function(){ c.crop.rot = (c.crop.rot + 90) % 360; save(); renderPreview(); };
+  if($("recenter")) $("recenter").onclick = function(){ c.crop = {dx:0, dy:0, z:1, rot:c.crop.rot}; save(); renderPreview(); updateImg(); };
+  if($("nophoto")) $("nophoto").onclick = function(){ var old = c.photo; c.photo = null; save(); dropPhotoIfUnused(old); renderEditor(); };
+  if($("zm")){
+    $("zm").oninput = function(){ c.crop.z = +this.value; updateImg(); };
+    $("zm").onchange = save;
+    $("zin").onclick = function(){ c.crop.z = Math.min(4, +(c.crop.z*1.15).toFixed(3)); updateImg(); save(); };
+    $("zout").onclick = function(){ c.crop.z = Math.max(.3, +(c.crop.z/1.15).toFixed(3)); updateImg(); save(); };
+  }
+  $("print").onclick = function(){ c.print = !c.print; save(); renderEditor(); };
+  $("dup").onclick = function(){
+    var d = newCard({deck:c.deck, land:c.land, name:c.name, cost:c.cost, f:c.f, e:c.e});
+    d.photo = c.photo; d.crop = JSON.parse(JSON.stringify(c.crop)); d.order = c.order + .5; putCard(d);
+    S.edit = d.id; renderEditor(); toast("Carte dupliquée");
+  };
+  $("del").onclick = function(){
+    if(c.locked) return;
+    ask("Supprimer cette carte ?", "Supprimer", function(){
+      var list = curList(), i = list.indexOf(c), next = list[i+1] || list[i-1];
+      S.cards = S.cards.filter(function(x){ return x !== c; });
+      delCard(c.id); dropPhotoIfUnused(c.photo);
+      if(next){ S.edit = next.id; renderEditor(); } else closeEditor();
+    }, true);
+  };
+  function save(){ putCard(c); }
+}
+function stepEditor(d){
+  var list = curList(), i = list.indexOf(edCard()), n = list[i+d];
+  if(n){ S.edit = n.id; renderEditor(); }
+}
+$("edBack").onclick = closeEditor;
+$("edPrev").onclick = function(){ stepEditor(-1); };
+$("edNext").onclick = function(){ stepEditor(1); };
+$("edLock").onclick = function(){ var c = edCard(); c.locked = !c.locked; putCard(c); renderEditor(); toast(c.locked ? "Carte verrouillée 🔒" : "Carte déverrouillée"); };
+
+// cadrage : glisser pour déplacer, pincer pour zoomer
+(function(){
+  var pv = $("pv"), ptrs = {}, base = null;
+  function pts(){ return Object.keys(ptrs).map(function(k){ return ptrs[k]; }); }
+  function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+  pv.addEventListener("pointerdown", function(e){
+    var c = edCard(); if(!c || c.locked || c.land || !c.photo) return;
+    pv.setPointerCapture(e.pointerId);
+    ptrs[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var p = pts();
+    base = { dx:c.crop.dx, dy:c.crop.dy, z:c.crop.z, p0:p[0], d:p.length>1 ? dist(p[0],p[1]) : 0, n:p.length };
+  });
+  pv.addEventListener("pointermove", function(e){
+    if(!ptrs[e.pointerId] || !base) return;
+    ptrs[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var c = edCard(), p = pts(), s = MM*E.k;
+    if(p.length > 1 && base.d){
+      c.crop.z = Math.max(.3, Math.min(4, base.z * dist(p[0],p[1]) / base.d));
+    } else if(p.length === 1 && base.n === 1){
+      c.crop.dx = base.dx + (p[0].x - base.p0.x)/s;
+      c.crop.dy = base.dy + (p[0].y - base.p0.y)/s;
+    }
+    updateImg();
+  });
+  function up(e){
+    if(!ptrs[e.pointerId]) return;
+    delete ptrs[e.pointerId];
+    var c = edCard(), p = pts();
+    if(c) putCard(c);
+    base = p.length && c ? { dx:c.crop.dx, dy:c.crop.dy, z:c.crop.z, p0:p[0], d:0, n:p.length } : null;
+  }
+  pv.addEventListener("pointerup", up);
+  pv.addEventListener("pointercancel", up);
+  pv.addEventListener("wheel", function(e){
+    var c = edCard(); if(!c || c.locked || !c.photo) return;
+    e.preventDefault();
+    c.crop.z = Math.max(.3, Math.min(4, c.crop.z * (e.deltaY < 0 ? 1.08 : 1/1.08)));
+    updateImg(); putCard(c);
+  }, {passive:false});
+})();
+
+// plusieurs images d'un coup : elles remplissent, dans l'ordre de la liste,
+// les créatures du deck qui n'ont pas encore d'image ; s'il en reste, de nouvelles cartes sont créées
+$("fileMulti").addEventListener("change", function(){
+  var files = Array.prototype.slice.call(this.files || []);
+  this.value = "";
+  if(!files.length || S.filter==="all") return;
+  var deck = S.filter;
+  var free = visible().filter(function(c){ return !c.land && !c.photo && !c.locked; });
+  var done = 0, created = 0;
+  toast("Images : 0 / " + files.length, 60000);
+  files.reduce(function(p, f, i){
+    return p.then(function(){
+      return importPhoto(f).then(function(pid){
+        var c = free[i];
+        if(!c){
+          c = newCard({deck:deck, n:i});
+          var nm = (f.name || "").replace(/\.[^.]+$/, "");
+          if(nm && !/^(IMG|DSC|PXL|image)[_-]?\d*/i.test(nm)) c.name = nm;
+          created++;
+        }
+        c.photo = pid; c.crop = {dx:0, dy:0, z:1, rot:0};
+        putCard(c);
+        done++;
+        toast("Images : " + done + " / " + files.length, 60000);
+      }, function(){});
+    });
+  }, Promise.resolve()).then(function(){
+    renderList();
+    toast(done + " image" + (done>1?"s":"") + " ajoutée" + (done>1?"s":"") + (created ? " · " + created + " carte" + (created>1?"s":"") + " créée" + (created>1?"s":"") : ""), 4000);
+  });
+});
+
+$("file").addEventListener("change", function(){
+  var f = this.files && this.files[0], c = edCard();
+  this.value = "";
+  if(!f || !c) return;
+  toast("Chargement de l'image…");
+  importPhoto(f).then(function(pid){
+    var old = c.photo;
+    c.photo = pid; c.crop = {dx:0, dy:0, z:1, rot:0};
+    putCard(c); dropPhotoIfUnused(old);
+    renderEditor(); hideToast();
+  });
+});
+
+/* ---------- impression ---------- */
+function geom(){
+  var f = P.comp/100;
+  var w = P.cardW*f, h = P.cardH*f, g = P.gap*f, t = P.top*f;
+  var cols = Math.max(1, Math.floor((PW + g)/(w + g)));
+  var rows = Math.max(1, Math.floor((PH - t + g)/(h + g)));
+  var gw = cols*w + (cols-1)*g, b = P.bleed/100;
+  return { f:f, w:w, h:h, g:g, t:t, cols:cols, rows:rows, bx:w*b/2, by:h*b/2, gw:gw, x0:(PW-gw)/2 };
+}
+// ordre de remplissage : du bas vers le haut (on peut réengager une feuille entamée)
+function fillOrder(G){
+  var o = [];
+  for(var r=G.rows-1;r>=0;r--) for(var c=0;c<G.cols;c++) o.push(r*G.cols + c);
+  return o;
+}
+function printList(){ return sorted(S.cards.filter(function(c){ return c.print; })); }
+function layoutPages(){
+  var G = geom(), per = G.cols*G.rows, order = fillOrder(G), list = printList();
+  var skip = Math.min(P.skip, per-1), pages = [], i = 0, first = true;
+  while(i < list.length){
+    var slots = {}, start = first ? skip : 0;
+    for(var s=start; s<per && i<list.length; s++) slots[order[s]] = list[i++];
+    pages.push({slots:slots, used: first ? order.slice(0, skip) : []});
+    first = false;
+  }
+  return {G:G, pages:pages, n:list.length};
+}
+function renderPrintTb(L){
+  var per = L.G.cols*L.G.rows;
+  var h = '<div class="row"><span class="meta" style="flex:1"><b>'+L.n+'</b> cartes cochées → <b>'+L.pages.length+'</b> feuille'+(L.pages.length>1?"s":"")+' A4 ('+per+' par feuille)</span>'
+        + '<button class="btn acc" id="doPrint">Imprimer</button></div>';
+  h += '<div class="row"><span class="lab" style="min-width:0;flex:1">Emplacements déjà utilisés sur la 1<sup>re</sup> feuille</span>'
+     + '<div class="stp"><button id="skm">−</button><b>'+P.skip+'</b><button id="skp">+</button></div></div>';
+  h += '<div class="row"><span class="lab" style="min-width:0">Zoom</span><button class="btn" id="pzo">−</button>'
+     + '<button class="btn" id="pzf">'+Math.round(P.zoom*100)+' %</button><button class="btn" id="pzi">+</button>'
+     + '<span class="meta" style="flex:1;text-align:right">Les cartes se placent du bas vers le haut.</span></div>';
+  $("printTb").innerHTML = h;
+  $("doPrint").onclick = doPrint;
+  $("skm").onclick = function(){ P.skip = Math.max(0, P.skip-1); saveP(); renderPrint(); };
+  $("skp").onclick = function(){ P.skip = Math.min(per-1, P.skip+1); saveP(); renderPrint(); };
+  $("pzo").onclick = function(){ setZoom(P.zoom/1.25); };
+  $("pzi").onclick = function(){ setZoom(P.zoom*1.25); };
+  $("pzf").onclick = function(){ setZoom(1); };
+}
+function setZoom(z){
+  P.zoom = Math.max(.4, Math.min(5, z)); saveP();
+  $("pzf").textContent = Math.round(P.zoom*100) + " %";
+  sizePages();
+}
+function sizePages(){
+  var sc = $("pscroll");
+  var fitK = Math.min((sc.clientWidth - 32)/(PW*MM), 1);
+  var k = fitK * P.zoom;
+  Array.prototype.forEach.call(document.querySelectorAll("#pages .pw"), function(pw){
+    pw.style.width = (PW*MM*k) + "px"; pw.style.height = (PH*MM*k) + "px";
+    pw.firstChild.style.transform = "scale("+k+")";
+  });
+  $("pages").style.alignItems = P.zoom > 1 ? "flex-start" : "center";
+}
+function renderPrint(){
+  var L = layoutPages(), G = L.G, box = $("pages");
+  renderPrintTb(L);
+  box.innerHTML = "";
+  if(!L.pages.length){
+    box.innerHTML = '<div class="empty-list">Aucune carte à imprimer.<br>Cochez 🖨️ les cartes dans <b>Mes cartes</b>.</div>';
+    return;
+  }
+  L.pages.forEach(function(pg){
+    var pw = document.createElement("div"); pw.className = "pw";
+    var page = document.createElement("div"); page.className = "page";
+    page.innerHTML = '<div class="edge">haut de la feuille</div>';
+    Object.keys(pg.slots).forEach(function(k){
+      var i = +k, r = Math.floor(i/G.cols), col = i % G.cols;
+      var x = G.x0 + col*(G.w+G.g), y = G.t + r*(G.h+G.g);
+      var sb = document.createElement("div");
+      sb.className = "slotbox";
+      sb.style.cssText = "left:"+(x-G.bx)+"mm;top:"+(y-G.by)+"mm;width:"+(G.w+2*G.bx)+"mm;height:"+(G.h+2*G.by)+"mm";
+      sb.appendChild(cardEl(pg.slots[k], G.f, G.bx, G.by));
+      var cut = document.createElement("div");
+      cut.className = "scr";
+      cut.style.cssText = "position:absolute;left:"+G.bx+"mm;top:"+G.by+"mm;width:"+G.w+"mm;height:"+G.h+"mm;border:.2mm dashed rgba(224,85,143,.7);pointer-events:none";
+      sb.appendChild(cut);
+      page.appendChild(sb);
+    });
+    pg.used.forEach(function(i){
+      var r = Math.floor(i/G.cols), col = i % G.cols;
+      var sb = document.createElement("div");
+      sb.className = "slotbox used";
+      sb.style.cssText = "left:"+(G.x0 + col*(G.w+G.g))+"mm;top:"+(G.t + r*(G.h+G.g))+"mm;width:"+G.w+"mm;height:"+G.h+"mm";
+      page.appendChild(sb);
+    });
+    if(P.marks) drawMarks(page, G, Object.keys(pg.slots).map(Number));
+    pw.appendChild(page); box.appendChild(pw);
+  });
+  sizePages();
+}
+function drawMarks(page, G, idx){
+  if(!idx.length) return;
+  var rows = {}, cols = {}, minR = 1e9, maxR = -1;
+  idx.forEach(function(i){ var r = Math.floor(i/G.cols); rows[r] = 1; cols[i % G.cols] = 1; minR = Math.min(minR, r); maxR = Math.max(maxR, r); });
+  var L = 4, T = .15, PAD = .8;
   function tick(x,y,w,h){
-    var m = document.createElement("div");
-    m.className = "mark";
+    var m = document.createElement("div"); m.className = "mark";
     m.style.cssText = "left:"+x+"mm;top:"+y+"mm;width:"+w+"mm;height:"+h+"mm";
     page.appendChild(m);
   }
-
-  // traits de coupe horizontaux : repères dans les marges gauche et droite
   var xL = G.x0 - G.bx - PAD, xR = G.x0 + G.gw + G.bx + PAD;
   var lenL = Math.min(L, Math.max(0, xL - 3)), lenR = Math.min(L, Math.max(0, PW - 3 - xR));
   Object.keys(rows).forEach(function(r){
     var y0 = G.t + (+r)*(G.h+G.g);
     [y0, y0+G.h].forEach(function(y){
-      if(lenL > 0.5) tick(xL-lenL, y-T/2, lenL, T);
-      if(lenR > 0.5) tick(xR, y-T/2, lenR, T);
+      if(lenL > .5) tick(xL-lenL, y-T/2, lenL, T);
+      if(lenR > .5) tick(xR, y-T/2, lenR, T);
     });
   });
-
-  // traits de coupe verticaux : repères juste au-dessus et au-dessous du bloc utilisé
-  var yT = G.t + minR*(G.h+G.g) - G.by - PAD;
-  var yB = G.t + maxR*(G.h+G.g) + G.h + G.by + PAD;
+  var yT = G.t + minR*(G.h+G.g) - G.by - PAD, yB = G.t + maxR*(G.h+G.g) + G.h + G.by + PAD;
   var lenT = Math.min(L, Math.max(0, yT - 3)), lenB = Math.min(L, Math.max(0, PH - 3 - yB));
   Object.keys(cols).forEach(function(c){
     var x0 = G.x0 + (+c)*(G.w+G.g);
     [x0, x0+G.w].forEach(function(x){
-      if(lenT > 0.5) tick(x-T/2, yT-lenT, T, lenT);
-      if(lenB > 0.5) tick(x-T/2, yB, T, lenB);
+      if(lenT > .5) tick(x-T/2, yT-lenT, T, lenT);
+      if(lenB > .5) tick(x-T/2, yB, T, lenB);
     });
   });
 }
-
-function fit(){
-  var aw = stage.clientWidth - 28, ah = stage.clientHeight - 28;
-  var k, tf;
-  if(S.zoom && S.sel !== null){
-    // loupe : la carte sélectionnée (avec son fond perdu) remplit l'écran
-    var G = geom(), r = Math.floor(S.sel/G.cols), c = S.sel % G.cols, m = 3;
-    var x = G.x0 + c*(G.w+G.g) - G.bx - m, y = G.t + r*(G.h+G.g) - G.by - m;
-    var w = G.w + 2*(G.bx+m), h = G.h + 2*(G.by+m);
-    k = Math.min(aw/(w*MM), ah/(h*MM));
-    var tx = aw/2 - k*(x + w/2)*MM, ty = ah/2 - k*(y + h/2)*MM;
-    wrap.style.width = aw + "px"; wrap.style.height = ah + "px";
-    wrap.style.overflow = "hidden";
-    tf = "translate(" + tx + "px," + ty + "px) scale(" + k + ")";
-  } else {
-    k = Math.min(aw/(PW*MM), ah/(PH*MM));
-    wrap.style.width = (PW*MM*k) + "px";
-    wrap.style.height = (PH*MM*k) + "px";
-    wrap.style.overflow = "";
-    tf = "scale(" + k + ")";
-  }
-  Array.prototype.forEach.call(wrap.querySelectorAll(".page"), function(pg){ pg.style.transform = tf; });
-  S.k = k;
-  var zb = $("btnZoom");
-  if(zb){ zb.textContent = S.zoom ? "Feuille" : "Loupe"; zb.classList.toggle("go", !!S.zoom); }
+function doPrint(){
+  if(!printList().length){ toast("Rien à imprimer."); return; }
+  try{ window.print(); }catch(e){ toast("Impression impossible ici : ouvrez l'app depuis votre site GitHub."); }
 }
 
-/* ---------- photos ---------- */
-function photoById(id){
-  for(var i=0;i<S.photos.length;i++) if(S.photos[i].id===id) return S.photos[i];
-  return null;
-}
-
-function isHeic(f){
-  return /image\/hei[cf]/i.test(f.type || "") || /\.hei[cf]$/i.test(f.name || "");
-}
-
-function loadHeic(){
-  if(window.heic2any) return Promise.resolve(true);
-  if(loadHeic.p) return loadHeic.p;
-  var srcs = [
-    "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js",
-    "https://unpkg.com/heic2any@0.0.4/dist/heic2any.min.js"
-  ];
-  loadHeic.p = new Promise(function(res){
-    (function next(i){
-      if(i >= srcs.length) return res(false);
-      var s = document.createElement("script");
-      s.src = srcs[i];
-      s.onload = function(){ res(!!window.heic2any); };
-      s.onerror = function(){ next(i+1); };
-      document.head.appendChild(s);
-    })(0);
-  });
-  return loadHeic.p;
-}
-
-function flash(msg, ms){
-  S.busy = msg;
-  renderPage();
-  clearTimeout(flash.t);
-  if(ms) flash.t = setTimeout(function(){ S.busy = null; renderPage(); }, ms);
-}
-
-function addBlobs(list){
-  var ids = [];
-  list.forEach(function(b, i){
-    var id = "p"+Date.now()+"_"+i;
-    S.photos.push({ id: id, url: URL.createObjectURL(b) });
-    ids.push(id);
-  });
-  if(S.assignTo !== null && S.assignTo !== undefined){
-    var s = S.slots[S.assignTo];
-    if(s && ids.length){ s.photoId = ids[0]; s.dx = 0; s.dy = 0; s.z = 1; s.rot = 0; }
-    S.assignTo = null;
-  } else if(S.photos.length && S.active === null && !Q.list.length) S.active = S.photos[S.photos.length-1].id;
-  renderDock(); renderPage();
-}
-
-$("file").addEventListener("change", function(e){
-  var fs = Array.prototype.slice.call(e.target.files);
-  e.target.value = "";
-  if(!fs.length) return;
-
-  var heic = fs.filter(isHeic);
-  if(!heic.length){ addBlobs(fs); return; }
-
-  flash("Conversion de " + heic.length + " photo(s) HEIC…");
-  loadHeic().then(function(ok){
-    if(!ok){
-      addBlobs(fs.filter(function(f){ return !isHeic(f); }));
-      flash("HEIC non converti : connexion indisponible. Exportez en JPEG.", 8000);
-      return;
-    }
-    var chain = Promise.resolve(), out = [], failed = 0;
-    fs.forEach(function(f){
-      chain = chain.then(function(){
-        if(!isHeic(f)){ out.push(f); return; }
-        return window.heic2any({ blob:f, toType:"image/jpeg", quality:0.92 })
-          .then(function(b){ out.push(Array.isArray(b) ? b[0] : b); })
-          .catch(function(){ failed++; });
-      });
-    });
-    return chain.then(function(){
-      S.busy = null;
-      addBlobs(out);
-      if(failed) flash(failed + " fichier(s) HEIC illisible(s).", 6000);
-    });
-  });
+/* ---------- navigation ---------- */
+document.querySelectorAll(".tab").forEach(function(t){
+  t.onclick = function(){ showView(t.dataset.view); };
 });
-
-function removePhoto(id){
-  S.photos = S.photos.filter(function(p){ return p.id!==id; });
-  for(var k in S.slots){
-    if(S.slots[k].photoId!==id) continue;
-    if(S.slots[k].card) S.slots[k].photoId = null; else delete S.slots[k];
-  }
-  if(S.active===id) S.active = S.photos.length ? S.photos[0].id : null;
-  renderDock(); renderPage();
+function showView(v){
+  S.view = v;
+  document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("on", t.dataset.view===v); });
+  $("vlist").classList.toggle("on", v==="list");
+  $("vprint").classList.toggle("on", v==="print");
+  if(v==="print") renderPrint(); else renderList();
 }
-
-function place(i, photoId){
-  S.slots[i] = { photoId:photoId, dx:0, dy:0, z:1, rot:0, fit:"cover" };
-}
-
-function autofill(fromBottom){
-  var G = geom(), total = G.cols*G.rows;
-  var order = [];
-  for(var r=0;r<G.rows;r++){
-    var rr = fromBottom ? G.rows-1-r : r;
-    for(var c=0;c<G.cols;c++) order.push(rr*G.cols + c);
-  }
-  var pi = 0;
-  for(var j=0;j<order.length && pi<S.photos.length;j++){
-    if(!S.slots[order[j]]) place(order[j], S.photos[pi++].id);
-  }
-  S.sel = null;
-  renderDock(); renderPage();
-}
-
-/* ---------- panneau du bas ---------- */
-function renderDock(){
-  var b = $("dockBody"), h = "";
-
-  if(S.sel !== null && S.slots[S.sel] && S.slots[S.sel].card){
-    var d = S.slots[S.sel], c = d.card, dk = deckById(c.deck);
-    h += '<div class="row"><span class="lab">' + codeOf(S.sel, S.cols) + ' · ' + esc(dk.label)
-       + (c.land ? ' · terrain ♥' : ' · ♥' + c.cost + ' ⚔️' + c.f + ' 🛡️' + c.e) + '</span>'
-       + '<div class="grow" style="flex:1"></div>'
-       + '<button class="btn gh" data-act="deselect">Fermer</button></div>';
-    if(!c.land){
-      h += '<div class="row"><input type="text" id="cname" placeholder="Nom de la carte" value="' + esc(cardName(c)) + '"></div>';
-      h += '<div class="strip" id="strip"></div>';
-    }
-    if(d.photoId && !c.land){
-      h += '<div class="row"><span class="lab">Zoom</span>'
-         + '<input type="range" id="zoom" min="1" max="3" step="0.02" value="' + d.z + '"></div>';
-      h += '<div class="row">'
-         + '<button class="btn wide" data-act="rot">Pivoter</button>'
-         + '<button class="btn wide" data-act="fit">' + (d.fit==="cover" ? "Image entière" : "Remplir") + '</button>'
-         + '<button class="btn wide" data-act="reset">Recentrer</button>'
-         + '<button class="btn wide" data-act="nophoto">Sans image</button>'
-         + '</div>';
-    }
-    h += '<div class="row"><span class="meta" style="flex:1">' + (c.land ? 'Terrain : bordure et cœur uniquement.' : d.photoId ? 'Glissez l\'image pour la cadrer.' : 'Touchez une image ci-dessus pour l\'associer.') + '</span>'
-       + '<button class="btn gh" data-act="clear">Retirer la carte</button></div>';
-    b.innerHTML = h;
-
-    var strip2 = $("strip");
-    if(strip2){
-    var add = document.createElement("button");
-    add.className = "add"; add.dataset.act = "assign"; add.textContent = "+ image";
-    strip2.appendChild(add);
-    S.photos.forEach(function(p){
-      var t = document.createElement("div");
-      t.className = "thumb" + (d.photoId===p.id ? " on" : "");
-      t.innerHTML = '<img src="'+p.url+'" alt="">';
-      t.addEventListener("click", function(){
-        d.photoId = p.id; d.dx = 0; d.dy = 0; d.z = 1; d.rot = 0;
-        renderDock(); renderPage();
-      });
-      strip2.appendChild(t);
-    });
-    $("cname").addEventListener("input", function(){
-      var v = this.value.trim();
-      if(v) M.names[nameKey(c)] = v; else delete M.names[nameKey(c)];
-      save(); renderPage();
-    });
-    }
-  } else if(S.sel !== null && S.slots[S.sel]){
-    var d = S.slots[S.sel];
-    h += '<div class="row"><span class="lab">Emplacement ' + codeOf(S.sel, S.cols) + '</span>'
-       + '<div class="grow" style="flex:1"></div>'
-       + '<button class="btn gh" data-act="deselect">Fermer</button></div>';
-    h += '<div class="row"><span class="lab">Zoom</span>'
-       + '<input type="range" id="zoom" min="1" max="3" step="0.02" value="' + d.z + '"></div>';
-    h += '<div class="row">'
-       + '<button class="btn wide" data-act="rot">Pivoter</button>'
-       + '<button class="btn wide" data-act="fit">' + (d.fit==="cover" ? "Photo entière" : "Remplir") + '</button>'
-       + '<button class="btn wide" data-act="reset">Recentrer</button>'
-       + '<button class="btn wide" data-act="clear">Retirer</button>'
-       + '</div>';
-    h += '<div class="row"><span class="meta">Glissez la photo sur la feuille pour la cadrer.</span></div>';
-    b.innerHTML = h;
-  } else {
-    var opts = "";
-    DECKS.forEach(function(dk){
-      opts += '<option value="'+dk.id+'"'+(dk.id===M.deck?' selected':'')+'>'+esc(dk.label)+'</option>';
-    });
-    var sd = deckSide(M.deck);
-    h += '<div class="row"><select id="deck" style="flex:1;min-width:0">'+opts+'</select>'
-       + '<input type="color" id="dcol" value="'+deckColor(M.deck)+'">'
-       + '<button class="btn" data-act="side">'+(sd==="ami" ? "😊 Ami" : "😠 Ennemi")+'</button></div>';
-    h += '<div class="row"><span class="meta" style="flex:1">Deck : <b>'+Q.i+'/'+Q.list.length+'</b> cartes placées</span>'
-       + '<button class="btn acc" data-act="placedeck">Placer le deck</button>'
-       + '<button class="btn gh" data-act="restart">Reprendre</button></div>';
-    h += '<div class="strip" id="strip"></div>';
-    h += '<div class="row">'
-       + '<button class="btn wide" data-act="pick">Ajouter des photos</button>'
-       + '<button class="btn wide" data-act="fillbot">Remplir par le bas</button>'
-       + '<button class="btn wide" data-act="filltop">Par le haut</button>'
-       + '<button class="btn gh" data-act="wipe">Vider</button>'
-       + '</div>';
-    b.innerHTML = h;
-
-    var strip = $("strip");
-    if(!S.photos.length){
-      strip.innerHTML = '<div class="empty">Aucune image. Ajoutez-en, puis touchez une carte pour lui associer son image.</div>';
-    } else {
-      S.photos.forEach(function(p){
-        var t = document.createElement("div");
-        t.className = "thumb" + (S.active===p.id ? " on" : "");
-        t.innerHTML = '<img src="'+p.url+'" alt=""><button class="x" data-del="'+p.id+'">×</button>';
-        t.addEventListener("click", function(e){
-          if(e.target.dataset.del){ removePhoto(e.target.dataset.del); return; }
-          S.active = (S.active===p.id ? null : p.id);
-          renderDock(); renderPage();
-        });
-        strip.appendChild(t);
-      });
-    }
-  }
-
-  var z = $("zoom");
-  if(z) z.addEventListener("input", function(){
-    S.slots[S.sel].z = parseFloat(this.value);
-    renderPage();
-  });
-
-  var dsel = $("deck");
-  if(dsel) dsel.addEventListener("change", function(){
-    M.deck = this.value; save(); buildQueue(); renderDock(); renderPage();
-  });
-  var dcol = $("dcol");
-  if(dcol) dcol.addEventListener("input", function(){
-    M.colors[M.deck] = this.value; save(); renderPage();
-  });
-}
-
-$("dockBody").addEventListener("click", function(e){
-  var btn = e.target.closest("button[data-act]");
-  if(!btn) return;
-  var a = btn.dataset.act, d = S.slots[S.sel];
-  if(a==="placedeck") placeDeck();
-  else if(a==="restart"){ Q.i = 0; renderDock(); }
-  else if(a==="side"){ M.sides[M.deck] = deckSide(M.deck)==="ami" ? "ennemi" : "ami"; save(); renderDock(); renderPage(); }
-  else if(a==="assign"){ S.assignTo = S.sel; $("file").click(); }
-  else if(a==="nophoto"){ d.photoId = null; renderDock(); renderPage(); }
-  else if(a==="pick") $("file").click();
-  else if(a==="fillbot") autofill(true);
-  else if(a==="filltop") autofill(false);
-  else if(a==="wipe"){ for(var k in S.slots) delete S.slots[k]; S.sel=null; renderDock(); renderPage(); }
-  else if(a==="deselect"){ S.sel=null; renderDock(); renderPage(); }
-  else if(a==="rot"){ d.rot=(d.rot+90)%360; renderPage(); }
-  else if(a==="fit"){ d.fit = d.fit==="cover" ? "contain" : "cover"; renderDock(); renderPage(); }
-  else if(a==="reset"){ d.dx=0; d.dy=0; d.z=1; renderDock(); renderPage(); }
-  else if(a==="clear"){ delete S.slots[S.sel]; S.sel=null; renderDock(); renderPage(); }
-});
-
-$("pnav").addEventListener("click", function(e){
-  var b = e.target.closest("button[data-pg]");
-  if(!b || b.disabled) return;
-  var a = b.dataset.pg;
-  if(a==="prev") goPage(S.pi - 1);
-  else if(a==="next") goPage(S.pi + 1);
-  else if(a==="del" && S.pages.length > 1){
-    S.pages.splice(S.pi, 1);
-    S.pi = Math.min(S.pi, S.pages.length - 1);
-    S.slots = S.pages[S.pi]; S.sel = null;
-  }
-  renderDock(); renderPage();
-});
-
-/* ---------- gestes sur la feuille ---------- */
-var drag = null;
-wrap.addEventListener("pointerdown", function(e){
-  var el = e.target.closest(".slot");
-  if(!el) return;
-  var i = +el.dataset.i;
-  drag = { i:i, x:e.clientX, y:e.clientY, moved:false, img:el.querySelector("img"),
-           d:S.slots[i] ? { dx:S.slots[i].dx, dy:S.slots[i].dy } : null };
-  el.setPointerCapture(e.pointerId);
-});
-wrap.addEventListener("pointermove", function(e){
-  if(!drag || !drag.d || !drag.img || S.sel !== drag.i) return;
-  var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-  if(!drag.moved && Math.abs(dx)+Math.abs(dy) < 5) return;
-  drag.moved = true;
-  var s = S.slots[drag.i];
-  s.dx = drag.d.dx + dx/(S.k*MM);
-  s.dy = drag.d.dy + dy/(S.k*MM);
-  drag.img.style.transform = "translate(-50%,-50%) translate("+s.dx+"mm,"+s.dy+"mm) rotate("+s.rot+"deg) scale("+s.z+")";
-});
-wrap.addEventListener("pointerup", function(e){
-  if(!drag) return;
-  var i = drag.i, moved = drag.moved;
-  drag = null;
-  if(moved) return;
-  if(S.slots[i]){ S.sel = (S.sel===i ? null : i); }
-  else if(S.active){ place(i, S.active); S.sel = i; }
-  else if(Q.i < Q.list.length){
-    S.slots[i] = { photoId:null, dx:0, dy:0, z:1, rot:0, fit:"cover", card:Q.list[Q.i++] };
-    S.sel = i;
-  }
-  else { $("file").click(); return; }
-  renderDock(); renderPage();
-});
-wrap.addEventListener("pointercancel", function(){ drag=null; });
 
 /* ---------- réglages ---------- */
-function openPanel(on){
-  $("panel").classList.toggle("on", on);
-  $("sheetbg").classList.toggle("on", on);
-}
-$("btnZoom").addEventListener("click", function(){
-  S.zoom = !S.zoom;
-  if(S.zoom && S.sel === null){
-    var keys = Object.keys(S.slots).map(Number).sort(function(a,b){ return a-b; });
-    if(keys.length){ S.sel = keys[0]; renderDock(); }
-    else { S.zoom = false; flash("Placez d'abord une carte.", 2500); }
+function openSettings(){
+  var h = '<h2>Réglages</h2>';
+  h += '<div class="sec" style="border:0;margin-top:0;padding-top:0">Cartes</div>';
+  h += '<div class="grid2">'
+     + '<div class="field"><span class="lab">Style</span><select id="sStyle"><option value="cute">Mignon</option><option value="classic">Classique</option></select></div>'
+     + '<div class="field"><span class="lab">Ami / Ennemi</span><select id="sMarker"><option value="sym">Visages 😊 / 😠</option><option value="ban">Bandeau AMI / ENNEMI</option><option value="none">Aucun</option></select></div>'
+     + '<div class="field"><span class="lab">Bordure (mm)</span><input type="number" id="sFrame" step="0.5" min="0" max="10"></div>'
+     + '</div>';
+  h += '<div class="sec">Feuille A4</div>';
+  h += '<div class="grid2">'
+     + '<div class="field"><span class="lab">Largeur carte (mm)</span><input type="number" id="sW" step="0.5"></div>'
+     + '<div class="field"><span class="lab">Hauteur carte (mm)</span><input type="number" id="sH" step="0.5"></div>'
+     + '<div class="field"><span class="lab">Écart (mm)</span><input type="number" id="sG" step="0.5"></div>'
+     + '<div class="field"><span class="lab">Marge haute (mm)</span><input type="number" id="sT" step="0.5"></div>'
+     + '<div class="field"><span class="lab">Fond perdu (%)</span><input type="number" id="sB" step="0.5"></div>'
+     + '<div class="field"><span class="lab">Correction d\'échelle (%)</span><input type="number" id="sC" step="0.1"></div>'
+     + '</div>';
+  h += '<div class="row" style="margin-top:10px"><label class="meta"><input type="checkbox" id="sM"> Repères de coupe</label></div>';
+  h += '<div class="sec">Sauvegarde</div>';
+  h += '<div class="meta" style="margin-bottom:8px">Les cartes et images restent sur cet appareil, dans ce navigateur. Exportez une sauvegarde pour les transférer ailleurs.</div>';
+  h += '<div class="row"><button class="btn" id="sExp">Exporter</button><button class="btn" id="sImp">Importer</button><div style="flex:1"></div><button class="btn acc" id="sClose">OK</button></div>';
+  $("sheetIn").innerHTML = h;
+  $("sStyle").value = P.style; $("sMarker").value = P.marker; $("sFrame").value = P.frame; 
+  $("sW").value = P.cardW; $("sH").value = P.cardH; $("sG").value = P.gap; $("sT").value = P.top; $("sB").value = P.bleed; $("sC").value = P.comp;
+  $("sM").checked = P.marks;
+  function num(id, key, min, max){
+    $(id).onchange = function(){ var v = parseFloat(this.value); if(!isNaN(v)){ P[key] = Math.max(min, Math.min(max, v)); saveP(); } this.value = P[key]; refresh(); };
   }
-  renderPage();
-});
-$("btnSet").addEventListener("click", function(){ syncPanel(); openPanel(true); });
-$("btnClose").addEventListener("click", function(){ openPanel(false); });
-$("sheetbg").addEventListener("click", function(){ openPanel(false); });
-
-function syncPanel(){
-  $("cw").value = S.cardW; $("ch").value = S.cardH;
-  $("gp").value = S.gap;   $("tp").value = S.top;
-  $("cp").value = S.comp;  $("mk").checked = S.marks;
-  $("bl").value = S.bleed;
-  $("sty").value = M.style || "cute"; $("fr").value = M.frame; $("mkr").value = M.marker; $("lnd").checked = M.lands;
-  var key = S.cardW + "x" + S.cardH;
-  var opt = Array.prototype.filter.call($("preset").options, function(o){ return o.value===key; });
-  $("preset").value = opt.length ? key : "custom";
+  num("sFrame","frame",0,10); num("sW","cardW",20,200); num("sH","cardH",20,280); num("sG","gap",0,30); num("sT","top",0,60); num("sB","bleed",0,20); num("sC","comp",80,120);
+  $("sStyle").onchange = function(){ P.style = this.value; saveP(); refresh(); };
+  $("sMarker").onchange = function(){ P.marker = this.value; saveP(); refresh(); };
+  $("sM").onchange = function(){ P.marks = this.checked; saveP(); refresh(); };
+  $("sExp").onclick = exportAll;
+  $("sImp").onclick = function(){ $("fileImp").click(); };
+  $("sClose").onclick = function(){ $("sheet").classList.remove("on"); };
+  $("sheet").classList.add("on");
+}
+$("btnSet").onclick = openSettings;
+$("sheet").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("on"); });
+function refresh(){
+  if(S.edit) renderEditor();
+  if(S.view==="print") renderPrint(); else renderList();
 }
 
-$("preset").addEventListener("change", function(){
-  if(this.value==="custom") return;
-  var p = this.value.split("x");
-  S.cardW = +p[0]; S.cardH = +p[1];
-  syncPanel(); renderPage();
-});
-
-["cw","ch","gp","tp","cp","bl"].forEach(function(id){
-  $(id).addEventListener("change", function(){
-    var v = parseFloat(this.value);
-    if(isNaN(v)) { syncPanel(); return; }
-    if(id==="cw") S.cardW=v; if(id==="ch") S.cardH=v;
-    if(id==="gp") S.gap=v;   if(id==="tp") S.top=v;
-    if(id==="cp") S.comp=v;  if(id==="bl") S.bleed=v;
-    syncPanel(); renderPage();
+function blobToDataURL(b){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){ res(fr.result); }; fr.onerror = function(){ rej(fr.error); };
+    try{ fr.readAsDataURL(b); }catch(e){ rej(e); }
   });
+}
+function exportAll(){
+  toast("Préparation de la sauvegarde…");
+  idb("photos","readonly",function(st){ return st.getAll(); }).then(function(rows){
+    rows = rows || [];
+    return Promise.all(rows.map(function(r){ return recData(r).then(function(u){ return [r.id, u]; }, function(){ return [r.id, null]; }); }));
+  }).then(function(pairs){
+    var photos = {}; pairs.forEach(function(p){ if(p[1]) photos[p[0]] = p[1]; });
+    var data = JSON.stringify({app:"cartes-atelier", v:2, P:P, cards:S.cards, photos:photos});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([data], {type:"application/json"}));
+    a.download = "cartes-sauvegarde.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    hideToast();
+  });
+}
+$("fileImp").addEventListener("change", function(){
+  var f = this.files && this.files[0]; this.value = "";
+  if(!f) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    var d; try{ d = JSON.parse(fr.result); }catch(e){ toast("Fichier illisible."); return; }
+    if(!d || d.app!=="cartes-atelier"){ toast("Ce n'est pas une sauvegarde de cartes."); return; }
+    ask("Remplacer toutes les cartes actuelles par celles de la sauvegarde ?", "Remplacer", function(){ doImport(d); }, true);
+  };
+  fr.readAsText(f);
 });
-$("mk").addEventListener("change", function(){ S.marks=this.checked; renderPage(); });
-$("fr").addEventListener("change", function(){
-  var v = parseFloat(this.value);
-  if(!isNaN(v)){ M.frame = Math.max(0, Math.min(10, v)); save(); }
-  syncPanel(); renderPage();
+function doImport(d){
+    var jobs = Object.keys(d.photos||{}).map(function(id){
+      S.photos[id] = d.photos[id];
+      return savePhoto(id, d.photos[id]);
+    });
+    Promise.all(jobs).then(function(){
+      return idb("cards","readwrite",function(st){ return st.clear(); });
+    }).then(function(){
+      S.cards = d.cards || [];
+      S.cards.forEach(putCard);
+      if(d.P){ for(var k in d.P) P[k] = d.P[k]; saveP(); }
+      $("sheet").classList.remove("on");
+      refresh(); toast("Sauvegarde importée");
+    });
+}
+
+/* ---------- confirmation intégrée (confirm() est bloqué dans certains affichages) ---------- */
+function ask(msg, okLabel, fn, danger){
+  var box = $("ask");
+  box.querySelector(".msg").textContent = msg;
+  var ok = box.querySelector(".ok");
+  ok.textContent = okLabel || "OK";
+  ok.className = "btn ok " + (danger ? "dng" : "acc");
+  ok.onclick = function(){ box.classList.remove("on"); fn(); };
+  box.querySelector(".no").onclick = function(){ box.classList.remove("on"); };
+  box.classList.add("on");
+}
+
+/* ---------- divers ---------- */
+var tt = null;
+function toast(msg, ms){
+  var t = $("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(tt); tt = setTimeout(hideToast, ms || 2600);
+}
+function hideToast(){ $("toast").classList.remove("on"); }
+window.addEventListener("resize", function(){
+  if(S.edit) renderPreview();
+  if(S.view==="print") sizePages();
 });
-$("sty").addEventListener("change", function(){ M.style = this.value; save(); renderPage(); });
-$("mkr").addEventListener("change", function(){ M.marker = this.value; save(); renderPage(); });
-$("lnd").addEventListener("change", function(){ M.lands = this.checked; save(); buildQueue(); renderDock(); renderPage(); });
 
-$("btnPrint").addEventListener("click", function(){
-  S.sel = null; S.active = null;
-  renderDock(); renderPage();
-  var pgs = wrap.querySelectorAll(".page:not(.empty)");
-  if(!pgs.length){ flash("Rien à imprimer.", 3000); return; }
-  pgs[pgs.length-1].classList.add("lastp");
-  setTimeout(function(){ window.print(); }, 60);
+/* ---------- démarrage ---------- */
+idbOpen().then(function(){
+  return Promise.all([
+    idb("cards","readonly",function(st){ return st.getAll(); }),
+    idb("photos","readonly",function(st){ return st.getAll(); })
+  ]);
+}).then(function(r){
+  S.cards = r[0] || [];
+  return Promise.all((r[1] || []).map(function(p){
+    return recData(p).then(function(d){ S.photos[p.id] = d; }, function(){});
+  }));
+}).then(function(){
+  if(!DB.ok) toast("Stockage indisponible : les cartes ne seront pas gardées après fermeture.", 5000);
+  renderList();
 });
-
-window.addEventListener("resize", fit);
-window.addEventListener("orientationchange", function(){ setTimeout(fit,200); });
-
-S.assignTo = null;
-buildQueue();
-renderDock();
-renderPage();
-})();
 </script>
 </body>
 </html>
