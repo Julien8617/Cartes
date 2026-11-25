@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Cartes — atelier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&display=swap">
 <style>
 :root{
   --ws:#ece4ea;
@@ -69,15 +71,23 @@ input[type=color]{width:44px;height:38px;padding:2px;border:1px solid var(--line
 .empty-list{padding:40px 24px;text-align:center;color:var(--ink-2);line-height:1.5}
 
 /* éditeur */
-.ed{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;background:var(--ws)}
+.ed{position:fixed;left:0;right:0;top:0;height:100%;z-index:20;display:none;flex-direction:column;background:var(--ws)}
+.ed .pv{min-height:36%}
+.typerow{display:flex;gap:10px;align-items:flex-start}
+.typerow > :last-child{flex:1;min-width:0}
+.minipv{display:none;flex:0 0 auto;position:relative;border-radius:4px;overflow:hidden;box-shadow:0 4px 12px rgba(43,34,48,.25)}
+.minipv.on{display:block}
+.minipv > div{transform-origin:0 0}
+.ed.typing .form{max-height:none;flex:1 1 auto}
+.ed.typing .top{padding-top:6px;padding-bottom:6px}
 .ed.on{display:flex}
 .ed,.bar,.tb,.item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ed input,.tb input{-webkit-user-select:text;user-select:text}
 .ed .top{flex:0 0 auto;display:flex;align-items:center;gap:6px;
   padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:var(--ink);color:#fff}
 .ed .pos{flex:1;text-align:center;font-family:var(--round);font-weight:700}
-.ed .pv{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:none;overflow:hidden;position:relative}
-.ed .pv .holder{position:relative}
+.ed .pv{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:pan-y;overflow:hidden;position:relative}
+.ed .pv .holder{position:relative;touch-action:none}
 .ed .pv .holder > div{transform-origin:0 0}
 .ed .lockmsg{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:rgba(43,34,48,.85);color:#fff;
   font-size:13px;padding:5px 12px;border-radius:999px;display:none;white-space:nowrap}
@@ -132,7 +142,7 @@ input[type=range]{flex:1;accent-color:var(--accent)}
   font-family:var(--round);letter-spacing:.12em;text-transform:uppercase;font-size:3mm;color:#c9bfc7}
 .ov{position:absolute;transform-origin:0 0;pointer-events:none}
 .band{position:absolute;left:0;right:0;top:0;min-height:8.5mm;display:flex;flex-direction:column;justify-content:center;gap:.6mm;
-  padding:1mm 1.6mm;background:rgba(255,255,255,.93);border-bottom:.6mm solid var(--cc)}
+  padding:1mm 1.6mm;background:rgba(255,255,255,var(--bo,.93));border-bottom:.6mm solid var(--cc)}
 .nm{width:100%;min-width:0;font-family:var(--cond);font-weight:700;font-size:3.9mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#14181e}
 .nm .scr{color:#c9bfc7;font-weight:500}
 .hearts{display:flex;gap:.4mm;color:var(--cc);font-size:4.4mm;line-height:1;-webkit-text-stroke:.25mm #14181e;min-height:4.4mm}
@@ -141,6 +151,43 @@ input[type=range]{flex:1;accent-color:var(--accent)}
 .stat .ic{display:block;width:6.2mm;height:6.2mm;margin-bottom:-.5mm}
 .stat .n{font-family:var(--cond);font-weight:800;font-size:7mm;color:#14181e;margin-top:.2mm}
 .stat.atk{left:1.5mm}
+.flav{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  border:.5mm solid var(--cc);border-radius:1.2mm;padding:1.2mm 1.2mm .6mm;
+  font-family:var(--sans);font-style:italic;font-size:2.8mm;line-height:1.25;color:#2b2230}
+/* furigana posés au-dessus des kanji sans changer la hauteur de ligne :
+   même interligne avec ou sans lecture */
+.flav{line-height:1.75}
+.flav .rb{position:relative;display:inline-block;line-height:1}
+.flav .rt{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-.04em);
+  font-size:.52em;font-weight:700;line-height:1;white-space:nowrap;letter-spacing:0}
+.flav .ft{display:block;width:100%}
+.cute .flav{border-radius:2.4mm;font-family:var(--round);font-style:normal;font-weight:700;color:#5a3d55}
+details.lay{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:#fff}
+details.lay summary{font-family:var(--round);font-weight:800;font-size:14px;color:var(--ink-2);cursor:pointer}
+textarea{width:100%;min-height:56px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:16px;resize:vertical}
+.nsvg{position:absolute;left:0;overflow:visible;pointer-events:none}
+.hearts.free{position:absolute;left:0;right:0;top:1.2mm;justify-content:center;-webkit-text-stroke:.3mm #14181e;filter:drop-shadow(0 .3mm 0 #fff)}
+.studio-pv{display:flex;justify-content:center;padding:8px 0 10px;position:sticky;top:-16px;z-index:2;
+  background:#fff;margin:0 -16px;border-bottom:1px solid var(--line);box-shadow:0 6px 10px -8px rgba(43,34,48,.25)}
+.studio-pv > div{position:relative}
+.studio-pv > div > div{transform-origin:0 0}
+.sl{display:grid;grid-template-columns:84px 30px 1fr 30px 50px;align-items:center;gap:6px;margin:5px 0}
+.sl .nd{width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--accent);font-size:13px;font-weight:800}
+.heartsv{position:absolute;right:1.2mm;top:1.2mm;display:flex;flex-direction:column;align-items:center;gap:.3mm;
+  padding:1mm .9mm;border-radius:2.2mm;background:rgba(255,255,255,var(--bo,.93));border:.5mm solid var(--cc);
+  color:var(--cc);font-size:4.2mm;line-height:1;-webkit-text-stroke:.25mm #14181e}
+.band.hv{right:8.6mm}
+.cute .band.hv{right:8.8mm}
+.sl b{text-align:right;font-family:var(--round);font-size:13px}
+.shp{position:absolute;bottom:.8mm;width:16.5mm;height:16.5mm}
+.shp svg{position:absolute;inset:0}
+.shp .n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--cond);font-weight:800;font-size:7.4mm;line-height:1;color:#14181e}
+.shp.atk{left:.8mm}
+.shp.atk .n{padding-top:.6mm;font-size:6.4mm}
+.shp.def{right:1.6mm;bottom:1.4mm;width:14mm;height:14mm}
+.shp.def .n{padding-bottom:.7mm;font-size:6.4mm}
+.cute .shp .n{font-family:var(--round);font-weight:900;color:#5a3d55}
 .stat.def{right:1.5mm}
 .side{position:absolute;bottom:4mm;left:50%;transform:translateX(-50%)}
 .side.sym{width:10mm;height:10mm}
@@ -149,11 +196,14 @@ input[type=range]{flex:1;accent-color:var(--accent)}
 .side.ban.ennemi{background:#fff;color:#14181e}
 .landbig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40mm;line-height:1;color:var(--cc);-webkit-text-stroke:.5mm #14181e}
 .spk{position:absolute;line-height:1;color:#fff;-webkit-text-stroke:.3mm var(--cc);pointer-events:none}
+/* les petites étoiles restent derrière le nom, le bandeau, les cœurs, le texte et les chiffres */
+.ov .spk{z-index:0}
+.ov .band,.ov .nsvg,.ov .hearts,.ov .heartsv,.ov .flav,.ov .stat,.ov .shp,.ov .side{z-index:2}
 /* style mignon */
 .bleed.cute{background-image:radial-gradient(circle, rgba(255,255,255,.5) 22%, transparent 25%);background-size:3.4mm 3.4mm;background-position:1.7mm 1.7mm}
 .cute .win{border-radius:3.5mm;border:.8mm solid #fff}
 .cute .win.landw{background-color:#fff;background-image:radial-gradient(circle, var(--cc2) 18%, transparent 21%);background-size:5mm 5mm}
-.cute .band{left:1.6mm;right:1.6mm;top:1.6mm;border-radius:3mm;border:.6mm solid var(--cc);background:#fff;align-items:center;text-align:center}
+.cute .band{left:1.6mm;right:1.6mm;top:1.6mm;border-radius:3mm;border:.6mm solid var(--cc);background:rgba(255,255,255,var(--bo,1));align-items:center;text-align:center}
 .cute .hearts{justify-content:center}
 .cute .nm{font-family:var(--round);font-weight:800;color:#5a3d55;text-align:center}
 .cute .stat{border:1mm solid var(--cc);box-shadow:inset 0 0 0 .7mm var(--cc2)}
@@ -313,6 +363,285 @@ var ICON_DEF = '<svg viewBox="0 0 40 40" width="100%" height="100%">'
   + '<path d="M20 8 C23.5 10 27 10.6 29.8 10.8 C29.4 21.5 26 27.5 20 31.8 C14 27.5 10.6 21.5 10.2 10.8 C13 10.6 16.5 10 20 8 Z" fill="none" stroke="#fff" stroke-width="1.6" opacity=".7"/>'
   + HEART(20, 19.5, 4.6, "#fff") + '</svg>';
 
+// formes pleines pour le style « étoile / bouclier » : le chiffre se place au centre
+var SHAPE_STAR = '<svg viewBox="0 0 40 40" width="100%" height="100%"><path d="M20 2.5 L25.2 13.4 L37.2 14.9 L28.4 23.2 L30.7 35.1 L20 29.3 L9.3 35.1 L11.6 23.2 L2.8 14.9 L14.8 13.4 Z" fill="#fff" stroke="var(--cc)" stroke-width="3.4" stroke-linejoin="round"/>'
+  + '<path d="M20 2.5 L25.2 13.4 L37.2 14.9 L28.4 23.2 L30.7 35.1 L20 29.3 L9.3 35.1 L11.6 23.2 L2.8 14.9 L14.8 13.4 Z" fill="none" stroke="'+INK+'" stroke-width="1.1" stroke-linejoin="round"/></svg>';
+var SHAPE_SHIELD = '<svg viewBox="0 0 40 40" width="100%" height="100%"><path d="M20 2.5 C25.5 5.8 30.5 6.4 35.5 6.4 C35.5 22.5 30 31.5 20 37.5 C10 31.5 4.5 22.5 4.5 6.4 C9.5 6.4 14.5 5.8 20 2.5 Z" fill="#fff" stroke="var(--cc)" stroke-width="3.4" stroke-linejoin="round"/>'
+  + '<path d="M20 2.5 C25.5 5.8 30.5 6.4 35.5 6.4 C35.5 22.5 30 31.5 20 37.5 C10 31.5 4.5 22.5 4.5 6.4 C9.5 6.4 14.5 5.8 20 2.5 Z" fill="none" stroke="'+INK+'" stroke-width="1.1" stroke-linejoin="round"/></svg>';
+
+/* ---------- styles du nom (studio) ---------- */
+var FONTS = {
+  comic: { label:"Comics (BANGERS)", css:'"Bangers","Hiragino Sans","Hiragino Kaku Gothic ProN","Arial Black",sans-serif', w:900, k:.55 },
+  heavy: { label:"Très gras", css:'"Arial Black","Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif', w:900, k:.68 },
+  round: { label:"Arrondie", css:'ui-rounded,"SF Pro Rounded","Hiragino Maru Gothic ProN","Arial Rounded MT Bold",sans-serif', w:900, k:.62 }
+};
+var DEFAULT_STYLES = [
+  { id:"band", label:"Bandeau (classique)", type:"band" },
+  { id:"boum", label:"BOUM ! comics", type:"comic", font:"comic", fill:"#ffd60a", stroke:"#1b1b1b", sw:1.1,
+    shadow:"#e63946", sd:1, size:8, skew:-10, rot:-4, curve:3, dy:0, upper:true, band:false },
+  { id:"pop",  label:"Pop couleur du deck", type:"comic", font:"heavy", fill:"#ffffff", stroke:"deck", sw:1.2,
+    shadow:"#5a3d55", sd:.8, size:6.5, skew:0, rot:0, curve:4, dy:0, upper:false, band:false }
+];
+if(!P.nameStyles) P.nameStyles = JSON.parse(JSON.stringify(DEFAULT_STYLES));
+if(!P.nameStyle) P.nameStyle = "band";
+function styleById(id){
+  for(var i=0;i<P.nameStyles.length;i++) if(P.nameStyles[i].id===id) return P.nameStyles[i];
+  return null;
+}
+function cardStyle(c){ return styleById(c.ns) || styleById(P.nameStyle) || DEFAULT_STYLES[0]; }
+var svgUid = 0;
+// texte du nom façon onomatopée : contour + ombre, inclinaison, rotation, courbe, taille
+function comicName(c, st, col, W){
+  var a = c.na || {};
+  var txt = c.name || "";
+  if(st.upper) txt = txt.toUpperCase();
+  var F = FONTS[st.font] || FONTS.comic;
+  var size = (st.size || 7) * (a.size || 100) / 100;
+  var skew = (st.skew || 0) + (a.skew || 0), rot = (st.rot || 0) + (a.rot || 0);
+  var curve = (st.curve || 0) + (a.curve || 0), dy = (st.dy || 0) + (a.dy || 0), dx = (st.dx || 0) + (a.dx || 0);
+  var top = (st.band ? 10 : 5.2) + dy, H = size*2.4, base = H*.62;
+  var fill = st.fill==="deck" ? col : st.fill, stroke = st.stroke==="deck" ? col : st.stroke;
+  var shadow = st.shadow==="deck" ? col : st.shadow;
+  var avail = W - 5, est = 0;
+  for(var i=0;i<txt.length;i++) est += /[\u3040-\u30ff\u4e00-\u9fff]/.test(txt[i]) ? size*1.0 : size*F.k;
+  var fit = est > avail ? ' textLength="'+avail.toFixed(2)+'" lengthAdjust="spacingAndGlyphs"' : '';
+  var id = "np" + (++svgUid), x0 = 2.5, x1 = W - 2.5, cx = W/2;
+  var path = 'M'+x0+' '+base+' Q'+cx+' '+(base - curve*2.2)+' '+x1+' '+base;
+  var font = 'font-family=\''+F.css+'\' font-weight="'+F.w+'" font-size="'+size.toFixed(2)+'"';
+  var t = function(extra, dx, dyy){
+    return '<text '+font+' '+extra+' transform="translate('+dx+' '+dyy+')" paint-order="stroke" stroke-linejoin="round" stroke-linecap="round">'
+         + '<textPath href="#'+id+'" startOffset="50%" text-anchor="middle"'+fit+'>'+esc(txt)+'</textPath></text>';
+  };
+  var g = '<svg class="nsvg" style="left:'+dx+'mm;top:'+top+'mm;width:'+W+'mm;height:'+H+'mm" viewBox="0 0 '+W+' '+H+'"><defs><path id="'+id+'" d="'+path+'"/></defs>'
+        + '<g transform="translate('+cx+' '+base+') rotate('+rot+') skewX('+skew+') translate('+(-cx)+' '+(-base)+')">';
+  if(st.sd > 0 && shadow) g += t('fill="'+shadow+'" stroke="'+shadow+'" stroke-width="'+(st.sw*2)+'"', st.sd, st.sd);
+  g += t('fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(st.sw*2)+'"', 0, 0);
+  g += '</g></svg>';
+  return g;
+}
+
+/* ---------- mise en page générale (toutes les cartes), avec aperçu fixe ---------- */
+function openLayout(){
+  function sample(){
+    var v = visible().filter(function(c){ return !c.land; })[0];
+    var c = v ? JSON.parse(JSON.stringify(v)) : {deck:"h1", name:"Exemple", cost:3, f:3, e:2, crop:{dx:0,dy:0,z:1,rot:0}, land:false};
+    delete c.lay;
+    if(!c.flavor) c.flavor = "Un texte d'ambiance pour raconter la carte.";
+    return c;
+  }
+  function pv(){
+    var box = $("lyPv"); if(!box) return;
+    var w = 130, k = w/(P.cardW*MM);
+    box.innerHTML = "";
+    var hold = document.createElement("div");
+    hold.style.width = w+"px"; hold.style.height = (P.cardH*MM*k)+"px";
+    var ce = cardEl(sample()); ce.style.transform = "scale("+k+")"; ce.style.boxShadow = "0 6px 18px rgba(43,34,48,.25)";
+    hold.appendChild(ce); box.appendChild(hold);
+  }
+  function draw(){
+    var h = '<h2>Mise en page · toutes les cartes</h2><div class="studio-pv" id="lyPv"></div>';
+    h += '<div class="meta">Chaque carte peut ensuite être ajustée à part dans sa fiche.</div>';
+    h += layHTML(layOf(null));
+    h += '<div class="row" style="margin-top:14px"><button class="btn gh" id="lyReset">Valeurs d\'origine</button><div style="flex:1"></div><button class="btn acc" id="lyClose">OK</button></div>';
+    $("sheetIn").innerHTML = h;
+    pv();
+    bindLay($("sheetIn"), function(){ return layOf(null); },
+      function(k, v){ if(v===undefined) delete P.lay[k]; else P.lay[k] = v; saveP(); },
+      function(full){ if(full) draw(); else pv(); });
+    $("lyReset").onclick = function(){ P.lay = {}; saveP(); draw(); };
+    $("lyClose").onclick = function(){ closeSheet(); refresh(); };
+  }
+  draw();
+  $("sheet").classList.add("on");
+}
+
+/* ---------- studio : créer et régler les styles enregistrés ---------- */
+var STUDIO_COLORS = ["#ffffff","#1b1b1b","#ffd60a","#ff9f1c","#e63946","#ff7aa8","#b57cf0","#4f8fe6","#5ab8f0","#3fbf9f","#6cc070","#5a3d55"];
+function openStudio(selId){
+  var cur = styleById(selId || P.nameStyle) || P.nameStyles[0];
+  function sample(){
+    var v = visible().filter(function(c){ return !c.land && c.name; })[0];
+    var c = v ? JSON.parse(JSON.stringify(v)) : {deck:"h1", name:"BOUM !", cost:3, f:3, e:2, crop:{dx:0,dy:0,z:1,rot:0}, land:false};
+    c.ns = cur.id; c.na = {};
+    return c;
+  }
+  function drawPv(){
+    var box = $("stPv"); if(!box) return;
+    var w = 130, k = w/(P.cardW*MM);
+    box.innerHTML = "";
+    var hold = document.createElement("div");
+    hold.style.width = w+"px"; hold.style.height = (P.cardH*MM*k)+"px";
+    var ce = cardEl(sample()); ce.style.transform = "scale("+k+")"; ce.style.boxShadow = "0 6px 18px rgba(43,34,48,.25)";
+    hold.appendChild(ce); box.appendChild(hold);
+  }
+  function save(){ saveP(); drawPv(); }
+  function swRow(key, label){
+    var h = '<div class="sl" style="grid-template-columns:92px 1fr"><span class="lab">'+label+'</span><div style="display:flex;flex-wrap:wrap;gap:6px">';
+    STUDIO_COLORS.concat(["deck"]).forEach(function(c){
+      var on = cur[key]===c, bg = c==="deck" ? "conic-gradient(#ff7aa8,#ffd166,#6cc070,#5ab8f0,#b57cf0,#ff7aa8)" : c;
+      h += '<button data-sw="'+key+'" data-v="'+c+'" title="'+(c==="deck"?"Couleur du deck":c)+'" style="width:26px;height:26px;border-radius:50%;background:'+bg+';border:'+(on?'3px solid #2b2230':'1px solid #ccc')+'"></button>';
+    });
+    return h + '</div></div>';
+  }
+  function slider(key, label, min, max, step, unit){
+    var v = cur[key] || 0;
+    return '<div class="sl"><span class="lab">'+label+'</span><button class="nd" data-nudge="-1">◀</button><input type="range" data-k="'+key+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"><button class="nd" data-nudge="1">▶</button><b id="v_'+key+'">'+v+(unit||'')+'</b></div>';
+  }
+  function draw(){
+    var opts = "";
+    P.nameStyles.forEach(function(st){ opts += '<option value="'+st.id+'"'+(st.id===cur.id?' selected':'')+'>'+esc(st.label)+(st.id===P.nameStyle?' ★':'')+'</option>'; });
+    var h = '<h2>Studio des styles de nom</h2>';
+    h += '<div class="row"><select id="stSel" style="flex:1">'+opts+'</select><button class="btn" id="stNew">＋ Nouveau</button></div>';
+    h += '<div class="studio-pv" id="stPv"></div>';
+    h += '<label class="row meta" style="margin:8px 0"><input type="checkbox" id="stHv"'+(P.heartsV?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Cœurs verticaux en haut à droite (toutes les cartes)</label>';
+    if(P.heartsV){
+      var hvs = function(k, label, min, max, step, def){
+        var v = P[k] !== undefined ? P[k] : def;
+        return '<div class="sl"><span class="lab">'+label+'</span><button class="nd" data-nudge="-1">◀</button><input type="range" data-hv="'+k+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"><button class="nd" data-nudge="1">▶</button><b id="v_'+k+'">'+v+' mm</b></div>';
+      };
+      h += '<div class="sec" style="margin-top:4px">Barre de cœurs</div>'
+         + hvs("hvX","Depuis la droite",0,40,.5,1.2) + hvs("hvY","Depuis le haut",0,60,.5,1.2) + hvs("hvR","Arrondi",0,5,.25,2.2);
+    }
+    if(cur.type !== "comic"){
+      h += '<div class="meta" style="text-align:center;margin-bottom:10px">Style bandeau classique : son opacité se règle dans ⚙︎ Réglages.<br>Touchez <b>＋ Nouveau</b> pour créer un style comics.</div>';
+    } else {
+      h += '<div class="row"><span class="lab">Nom</span><input type="text" id="stName" style="flex:1" value="'+esc(cur.label)+'"></div>';
+      var fo = ""; Object.keys(FONTS).forEach(function(k){ fo += '<option value="'+k+'"'+(cur.font===k?' selected':'')+'>'+FONTS[k].label+'</option>'; });
+      h += '<div class="row" style="margin-top:6px"><span class="lab">Police</span><select id="stFont" style="flex:1">'+fo+'</select></div>';
+      h += '<div class="sec">Couleurs</div>' + swRow("fill","Texte") + swRow("stroke","Contour") + swRow("shadow","Ombre");
+      h += '<div class="sec">Forme</div>'
+         + slider("sw","Contour",0,2,.1," mm") + slider("sd","Ombre",0,2.5,.1," mm")
+         + slider("size","Taille",3,12,.25," mm") + slider("skew","Inclinaison",-30,30,1,"°")
+         + slider("rot","Rotation",-30,30,1,"°") + slider("curve","Courbe",-8,8,.5,"")
+         + slider("dy","Hauteur",-4,30,.5," mm") + slider("dx","Horizontal",-15,15,.5," mm");
+      h += '<label class="row meta" style="margin-top:6px"><input type="checkbox" id="stUp"'+(cur.upper?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> MAJUSCULES (lettres latines)</label>';
+      h += '<label class="row meta" style="margin-top:6px"><input type="checkbox" id="stBand"'+(cur.band?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Garder le bandeau des cœurs derrière</label>';
+    }
+    h += '<div class="row" style="margin-top:14px;flex-wrap:wrap">'
+       + (cur.id!==P.nameStyle ? '<button class="btn acc" id="stDef" style="flex:1">★ Style par défaut</button>' : '<span class="meta" style="flex:1">★ C\'est le style par défaut</span>')
+       + (cur.id!=="band" ? '<button class="btn warn" id="stDel">Supprimer</button>' : '')
+       + '<button class="btn" id="stClose">Fermer</button></div>';
+    $("sheetIn").innerHTML = h;
+    drawPv();
+
+    $("stSel").onchange = function(){ cur = styleById(this.value); draw(); };
+    $("stHv").onchange = function(){ P.heartsV = this.checked; saveP(); draw(); };
+    $("sheetIn").querySelectorAll("input[data-hv]").forEach(function(r){
+      r.oninput = function(){
+        P[r.dataset.hv] = +r.value;
+        $("v_"+r.dataset.hv).textContent = r.value + " mm";
+        save();
+      };
+    });
+    $("stNew").onclick = function(){
+      var base = cur.type==="comic" ? cur : styleById("boum") || DEFAULT_STYLES[1];
+      var n = JSON.parse(JSON.stringify(base));
+      n.id = uid("s"); n.label = "Mon style " + P.nameStyles.length; n.type = "comic";
+      P.nameStyles.push(n); cur = n; saveP(); draw();
+    };
+    $("stClose").onclick = function(){ closeSheet(); refresh(); };
+    if($("stDef")) $("stDef").onclick = function(){ P.nameStyle = cur.id; saveP(); draw(); toast("Style par défaut : " + cur.label); };
+    if($("stDel")) $("stDel").onclick = function(){
+      var id = cur.id;
+      P.nameStyles = P.nameStyles.filter(function(x){ return x.id!==id; });
+      if(P.nameStyle===id) P.nameStyle = "band";
+      S.cards.forEach(function(c){ if(c.ns===id){ delete c.ns; putCard(c); } });
+      cur = styleById(P.nameStyle); saveP(); draw();
+    };
+    if(cur.type !== "comic") return;
+    $("stName").oninput = function(){ cur.label = this.value || "Sans nom"; saveP(); };
+    $("stName").onchange = function(){ draw(); };
+    $("stFont").onchange = function(){ cur.font = this.value; save(); };
+    $("stUp").onchange = function(){ cur.upper = this.checked; save(); };
+    $("stBand").onchange = function(){ cur.band = this.checked; save(); };
+    $("sheetIn").querySelectorAll("[data-sw]").forEach(function(b){
+      b.onclick = function(){ cur[b.dataset.sw] = b.dataset.v; saveP(); draw(); };
+    });
+    $("sheetIn").querySelectorAll("input[data-k]").forEach(function(r){
+      r.oninput = function(){
+        cur[r.dataset.k] = +r.value;
+        var u = {sw:" mm",sd:" mm",size:" mm",skew:"°",rot:"°",curve:"",dy:" mm",dx:" mm"}[r.dataset.k];
+        $("v_"+r.dataset.k).textContent = r.value + u;
+        save();
+      };
+    });
+  }
+  draw();
+  $("sheet").classList.add("on");
+}
+
+/* ---------- mise en page : cadre de texte d'ambiance et position de la force / endurance ---------- */
+var LDEF = { stScale:100, fbOn:false, fbW:44, fbH:10, fbX:0, fbY:17, stX:0, stY:0, stGap:0, stLink:true, atkX:0, atkY:0, defX:0, defY:0 };
+if(!P.lay) P.lay = {};
+function layOf(c){ return Object.assign({}, LDEF, P.lay || {}, (c && c.lay) || {}); }
+// contrôles réutilisés dans les réglages (toutes les cartes) et dans la fiche (cette carte)
+function layHTML(L){
+  function sl(k, label, min, max, step){
+    var v = L[k] !== undefined ? L[k] : 0;
+    return '<div class="sl"><span class="lab">'+label+'</span><button class="nd" data-nudge="-1">◀</button>'
+         + '<input type="range" data-lay="'+k+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'">'
+         + '<button class="nd" data-nudge="1">▶</button><b data-layv="'+k+'">'+v+(k==="fbOp"||k==="stScale"?" %":" mm")+'</b></div>';
+  }
+  var op = L.fbOp !== undefined ? L.fbOp : null;
+  var h = '<div class="sec" style="margin-top:6px">Cadre de texte d\'ambiance</div>';
+  h += '<label class="row meta"><input type="checkbox" data-layc="fbOn"'+(L.fbOn?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Afficher le cadre en bas de la carte</label>';
+  if(L.fbOn){
+    h += sl("fbW","Largeur",10,51,.5) + sl("fbH","Hauteur",4,45,.5) + sl("fbX","Horizontal",-25,25,.5) + sl("fbY","Vertical",0,75,.5);
+    h += '<div class="sl"><span class="lab">Opacité</span><button class="nd" data-nudge="-1">◀</button>'
+       + '<input type="range" data-lay="fbOp" min="0" max="100" step="5" value="'+(op===null ? bandOpacity()*100 : op)+'">'
+       + '<button class="nd" data-nudge="1">▶</button><b data-layv="fbOp">'+(op===null ? "auto" : op+" %")+'</b></div>';
+    h += '<div class="row" style="gap:6px"><button class="btn" data-layb="center" style="flex:1">↔ Centrer</button><button class="btn" data-layb="opauto" style="flex:1">Opacité comme le bandeau</button></div>';
+  }
+  h += '<div class="sec">Force et endurance</div>';
+  h += sl("stScale","Taille",50,200,5);
+  h += '<label class="row meta"><input type="checkbox" data-layc="unlink"'+(L.stLink===false?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Délier : régler la force et l\'endurance séparément</label>';
+  if(L.stLink===false){
+    // la force part du bord gauche et l'endurance du bord droit : chacune peut traverser toute la carte
+    var span = Math.ceil(P.cardW - 2*P.frame);
+    h += sl("atkX","Force ↔",-5,span,.5) + sl("atkY","Force ↕",-5,80,.5) + sl("defX","Endur. ↔",-span,5,.5) + sl("defY","Endur. ↕",-5,80,.5);
+  } else {
+    h += sl("stX","Horizontal",-20,20,.5) + sl("stY","Vertical",-5,80,.5) + sl("stGap","Écartement",-Math.ceil(P.cardW),10,.5);
+  }
+  return h;
+}
+function bandOpacity(){ return P.bandOp !== undefined ? P.bandOp/100 : (P.style==="cute" ? 1 : .93); }
+// get() renvoie la mise en page effective, set(k, v) enregistre, redraw(full) redessine
+function bindLay(box, get, set, redraw){
+  box.querySelectorAll("input[data-lay]").forEach(function(r){
+    r.oninput = function(){
+      var k = r.dataset.lay; set(k, +r.value);
+      var b = box.querySelector('[data-layv="'+k+'"]'); if(b) b.textContent = r.value + (k==="fbOp"||k==="stScale" ? " %" : " mm");
+      redraw(false);
+    };
+  });
+  box.querySelectorAll("input[data-layc]").forEach(function(cb){
+    cb.onchange = function(){
+      if(cb.dataset.layc==="fbOn") set("fbOn", cb.checked);
+      else {
+        var L = get();
+        if(cb.checked){ // on part des positions actuelles pour que rien ne saute
+          set("atkX", L.stX - L.stGap/2); set("atkY", L.stY); set("defX", L.stX + L.stGap/2); set("defY", L.stY);
+          set("stLink", false);
+        } else set("stLink", true);
+      }
+      redraw(true);
+    };
+  });
+  box.querySelectorAll("[data-layb]").forEach(function(b){
+    b.onclick = function(){
+      if(b.dataset.layb==="center") set("fbX", 0); else set("fbOp", undefined);
+      redraw(true);
+    };
+  });
+}
+
+/* furigana : un kanji suivi de sa lecture entre parenthèses, ex. 大好（だいす）き,
+   s'affiche avec la lecture en petit au-dessus des kanji */
+function furigana(t){
+  return t.replace(/([\u4e00-\u9fff\u3400-\u4dbf々〆ヶ]+)[（(]([\u3040-\u30ffー・]+)[）)]/g,
+    '<span class="rb">$1<span class="rt">$2</span></span>');
+}
+
 /* ---------- stockage des cartes et photos (IndexedDB) ---------- */
 var DB = { db:null, ok:false };
 function idbOpen(){
@@ -445,12 +774,13 @@ function imgTransform(c, f){
 function cardEl(c, f, bx, by){
   f = f || 1; bx = bx || 0; by = by || 0;
   var w = P.cardW*f, h = P.cardH*f, T = P.frame*f;
-  var col = deckColor(c.deck), side = deckSide(c.deck), cute = P.style==="cute";
+  var col = c.color || deckColor(c.deck), side = deckSide(c.deck), cute = P.style==="cute";
   var bl = document.createElement("div");
   bl.className = "bleed" + (cute ? " cute" : "");
   bl.style.cssText = "width:"+(w+2*bx)+"mm;height:"+(h+2*by)+"mm;background-color:"+col;
   bl.style.setProperty("--cc", col);
   bl.style.setProperty("--cc2", rgba(col, .16));
+  if(P.bandOp !== undefined) bl.style.setProperty("--bo", P.bandOp/100);
 
   var ww = w - 2*T, wh = h - 2*T;
   var win = document.createElement("div");
@@ -494,14 +824,46 @@ function cardEl(c, f, bx, by){
   var ov = document.createElement("div");
   ov.className = "ov";
   ov.style.cssText = "left:"+(bx+T)+"mm;top:"+(by+T)+"mm;width:"+(P.cardW-2*P.frame)+"mm;height:"+(P.cardH-2*P.frame)+"mm;transform:scale("+f+")";
-  var hh = '<div class="band"><div class="hearts">';
-  for(var k=0;k<c.cost;k++) hh += '♥';
-  hh += '</div><div class="nm">' + (c.name ? esc(c.name) : '<span class="scr">Nom…</span>') + '</div></div>';
-  hh += '<div class="stat atk"><span class="ic">'+ICON_ATK+'</span><span class="n">'+c.f+'</span></div>';
-  hh += '<div class="stat def"><span class="ic">'+ICON_DEF+'</span><span class="n">'+c.e+'</span></div>';
-  if(cute) hh += '<span class="spk" style="right:2.5mm;top:16mm;font-size:4.6mm">✦</span><span class="spk" style="right:6.5mm;top:22mm;font-size:2.8mm">✦</span><span class="spk" style="left:3mm;top:19mm;font-size:3.2mm">✦</span>';
-  if(P.marker==="sym") hh += '<div class="side sym">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
-  if(P.marker==="ban") hh += '<div class="side ban '+side+'">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
+  // carte de collection : seulement l'image et le nom
+  var coll = !!P.collection;
+  var st = cardStyle(c), hh = '', hearts = '', hv = !!P.heartsV && !coll;
+  if(!coll) for(var k=0;k<c.cost;k++) hearts += hv ? '<span>♥</span>' : '♥';
+  var hrow = hv || coll ? '' : '<div class="hearts">'+hearts+'</div>';
+  if(st.type !== "comic"){
+    hh += '<div class="band'+(hv?' hv':'')+'">'+hrow+'<div class="nm">' + (c.name ? esc(c.name) : '<span class="scr">Nom…</span>') + '</div></div>';
+  } else {
+    if(st.band) hh += '<div class="band'+(hv?' hv':'')+'">'+hrow+'<div class="nm">&nbsp;</div></div>';
+    else if(!hv && !coll) hh += '<div class="hearts free">'+hearts+'</div>';
+    hh += c.name ? comicName(c, st, col, P.cardW - 2*P.frame) : '<div class="scr" style="position:absolute;left:0;right:0;top:7mm;text-align:center;font-size:4mm;color:#c9bfc7">Nom…</div>';
+  }
+  if(hv && c.cost) hh += '<div class="heartsv" style="right:'+(P.hvX!==undefined?P.hvX:1.2)+'mm;top:'+(P.hvY!==undefined?P.hvY:1.2)+'mm;border-radius:'+(P.hvR!==undefined?P.hvR:2.2)+'mm">'+hearts+'</div>';
+  var L = layOf(c);
+  if(L.fbOn){
+    var Wn = P.cardW - 2*P.frame, op = L.fbOp !== undefined ? L.fbOp/100 : bandOpacity();
+    hh += '<div class="flav" style="left:'+((Wn - L.fbW)/2 + L.fbX)+'mm;bottom:'+L.fbY+'mm;width:'+L.fbW+'mm;height:'+L.fbH+'mm;background:rgba(255,255,255,'+op+')">'
+        + (c.flavor ? '<span class="ft">' + furigana(esc(c.flavor)).replace(/\n/g,"<br>") + '</span>' : '<span class="scr" style="color:#c9bfc7">texte d\'ambiance…</span>') + '</div>';
+  }
+  var ax, ay, dx2, dy2;
+  if(L.stLink===false){ ax = L.atkX; ay = L.atkY; dx2 = L.defX; dy2 = L.defY; }
+  else { ax = L.stX - L.stGap/2; ay = L.stY; dx2 = L.stX + L.stGap/2; dy2 = L.stY; }
+  var sc = (L.stScale || 100)/100;
+  var ta = ' style="transform-origin:50% 100%;transform:translate('+ax+'mm,'+(-ay)+'mm) scale('+sc+')"',
+      td = ' style="transform-origin:50% 100%;transform:translate('+dx2+'mm,'+(-dy2)+'mm) scale('+sc+')"';
+  if(coll){
+    // rien : ni force, ni endurance
+  } else if(P.statStyle==="shape"){
+    hh += '<div class="shp atk"'+ta+'>'+SHAPE_STAR+'<span class="n">'+c.f+'</span></div>';
+    hh += '<div class="shp def"'+td+'>'+SHAPE_SHIELD+'<span class="n">'+c.e+'</span></div>';
+  } else {
+    hh += '<div class="stat atk"'+ta+'><span class="ic">'+ICON_ATK+'</span><span class="n">'+c.f+'</span></div>';
+    hh += '<div class="stat def"'+td+'><span class="ic">'+ICON_DEF+'</span><span class="n">'+c.e+'</span></div>';
+  }
+  if(cute) hh += hv
+    ? '<span class="spk" style="right:9.5mm;top:18mm;font-size:4.2mm">✦</span><span class="spk" style="left:6.5mm;top:24mm;font-size:2.8mm">✦</span><span class="spk" style="left:3mm;top:19mm;font-size:3.2mm">✦</span>'
+    : '<span class="spk" style="right:2.5mm;top:16mm;font-size:4.6mm">✦</span><span class="spk" style="right:6.5mm;top:22mm;font-size:2.8mm">✦</span><span class="spk" style="left:3mm;top:19mm;font-size:3.2mm">✦</span>';
+  if(side==="none" || coll) c = Object.assign({}, c, {noMark:true});
+  if(P.marker==="sym" && !c.noMark) hh += '<div class="side sym">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
+  if(P.marker==="ban" && !c.noMark) hh += '<div class="side ban '+side+'">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
   ov.innerHTML = hh;
   bl.appendChild(ov);
   return bl;
@@ -523,8 +885,8 @@ function renderListTb(){
   if(S.filter !== "all"){
     var sd = deckSide(S.filter);
     h += '<div class="row"><input type="text" id="dname" value="'+esc(deckName(S.filter))+'" style="flex:1" placeholder="Nom du deck">'
-       + '<input type="color" id="dcol" value="'+deckColor(S.filter)+'">'
-       + '<button class="btn" id="dside">'+(sd==="ami" ? "😊 Ami" : "😠 Ennemi")+'</button></div>';
+       + '<button class="btn" id="dcol" aria-label="Couleur du deck" style="padding:6px"><i style="width:26px;height:26px;border-radius:50%;display:block;background:'+deckColor(S.filter)+'"></i></button>'
+       + '<button class="btn" id="dside">'+(sd==="ami" ? "😊 Ami" : sd==="ennemi" ? "😠 Ennemi" : "🚫 Sans logo")+'</button></div>';
     if(S.filter.charAt(0)==="u" && !deckCount(S.filter))
       h += '<div class="row"><button class="btn warn" id="ddel" style="flex:1">Supprimer ce deck personnalisé (vide)</button></div>';
   }
@@ -554,8 +916,18 @@ function renderListTb(){
   if($("dname")){
     $("dname").oninput = function(){ var v = this.value.trim(); if(v) P.names[S.filter] = v; else delete P.names[S.filter]; saveP(); renderListBody(); };
     $("dname").onchange = function(){ renderListTb(); };
-    $("dcol").oninput = function(){ P.colors[S.filter] = this.value; saveP(); renderListBody(); };
-    $("dside").onclick = function(){ P.sides[S.filter] = deckSide(S.filter)==="ami" ? "ennemi" : "ami"; saveP(); renderList(); };
+    $("dcol").onclick = function(){
+      var id = S.filter;
+      pickColor("deck « "+deckName(id)+" »", deckColor(id), function(col){
+        if(col) P.colors[id] = col; else delete P.colors[id];
+        saveP(); renderList();
+      });
+    };
+    $("dside").onclick = function(){
+      var cur = deckSide(S.filter), nx = cur==="ami" ? "ennemi" : cur==="ennemi" ? "none" : "ami";
+      P.sides[S.filter] = nx; saveP(); renderList();
+      toast(nx==="ami" ? "Deck ami 😊" : nx==="ennemi" ? "Deck ennemi 😠" : "Deck sans logo");
+    };
   }
   $("allPrint").onclick = function(){
     var vis = visible(), on = !(vis.length && vis.every(function(c){ return c.print; }));
@@ -726,7 +1098,11 @@ function renderSelTb(){
         + '<button class="btn gh" id="selAll">'+(sel.length===free.length && free.length ? "Tout désélectionner" : "Tout sélectionner")+'</button></div>';
   h += '<div class="row"><button class="btn" id="selPhotos" style="flex:1"'+(sel.length?'':' disabled')+'>Retirer les images</button>'
      + '<button class="btn warn" id="selDel" style="flex:1"'+(sel.length?'':' disabled')+'>Supprimer les cartes</button></div>';
-  h += '<div class="row"><button class="btn acc" id="selOff" style="flex:1">Terminé</button></div>';
+  var anyMark = sel.some(function(c){ return !c.noMark; });
+  h += '<div class="row"><button class="btn" id="selCol" style="flex:1"'+(sel.length?'':' disabled')+'>🎨 Changer la couleur</button>'
+     + '<button class="btn" id="selMark" style="flex:1"'+(sel.length?'':' disabled')+'>'+(sel.length && !anyMark ? '😊 Remettre le logo' : '🚫 Retirer le logo')+'</button></div>';
+  h += '<div class="row"><button class="btn" id="selNs" style="flex:1"'+(sel.length?'':' disabled')+'>✏️ Style du nom</button>'
+     + '<button class="btn acc" id="selOff" style="flex:1">Terminé</button></div>';
   $("listTb").innerHTML = h;
   $("selAll").onclick = function(){
     var all = sel.length===free.length && free.length;
@@ -734,6 +1110,38 @@ function renderSelTb(){
     renderList();
   };
   $("selOff").onclick = function(){ S.selMode = false; S.sel = {}; renderList(); };
+  $("selNs").onclick = function(){
+    var list = selCards();
+    var h = '<h2>Style du nom · '+list.length+' carte'+(list.length>1?'s':'')+'</h2>';
+    h += '<button class="btn" data-ns="" style="width:100%;margin-bottom:8px">Par défaut ('+esc((styleById(P.nameStyle)||{}).label||"")+')</button>';
+    P.nameStyles.forEach(function(st){ h += '<button class="btn" data-ns="'+st.id+'" style="width:100%;margin-bottom:8px">'+esc(st.label)+'</button>'; });
+    h += '<label class="row meta" style="margin:6px 0 10px"><input type="checkbox" id="nsKeep" checked style="width:20px;height:20px;accent-color:var(--accent)"> Garder les ajustements propres à chaque carte</label>';
+    h += '<div class="row"><div style="flex:1"></div><button class="btn" id="nsClose">Annuler</button></div>';
+    $("sheetIn").innerHTML = h;
+    $("sheetIn").querySelectorAll("[data-ns]").forEach(function(b){
+      b.onclick = function(){
+        var keep = $("nsKeep").checked;
+        list.forEach(function(c){ if(b.dataset.ns) c.ns = b.dataset.ns; else delete c.ns; if(!keep) delete c.na; putCard(c); });
+        closeSheet(); renderList(); toast("Style du nom appliqué");
+      };
+    });
+    $("nsClose").onclick = closeSheet;
+    $("sheet").classList.add("on");
+  };
+  $("selMark").onclick = function(){
+    var list = selCards(), off = list.some(function(c){ return !c.noMark; });
+    list.forEach(function(c){ if(off) c.noMark = true; else delete c.noMark; putCard(c); });
+    renderList();
+    toast(off ? "Logo ami/ennemi retiré" : "Logo ami/ennemi remis");
+  };
+  $("selCol").onclick = function(){
+    var list = selCards();
+    pickColor(list.length+" carte"+(list.length>1?"s":""), list[0] && (list[0].color || deckColor(list[0].deck)), function(col){
+      list.forEach(function(c){ if(col) c.color = col; else delete c.color; putCard(c); });
+      renderList();
+      toast(col ? "Couleur changée" : "Couleur du deck remise");
+    });
+  };
   $("selPhotos").onclick = function(){
     var list = selCards().filter(function(c){ return c.photo; });
     if(!list.length){ toast("Aucune image sur ces cartes."); return; }
@@ -785,6 +1193,8 @@ function updateImg(){
   var c = edCard(), img = $("holder").querySelector(".win img");
   if(c && img) img.style.transform = imgTransform(c, 1);
   var z = $("zm"); if(z) z.value = c.crop.z;
+  if($("pdx")){ $("pdx").value = c.crop.dx; $("pdxV").textContent = (+c.crop.dx.toFixed(1)) + " mm"; }
+  if($("pdy")){ $("pdy").value = c.crop.dy; $("pdyV").textContent = (+c.crop.dy.toFixed(1)) + " mm"; }
 }
 function renderEditor(){
   var c = edCard(); if(!c){ closeEditor(); return; }
@@ -811,10 +1221,39 @@ function renderEditor(){
       h += '<div class="row lk"><span class="lab">Zoom</span><button class="btn" id="zout">−</button>'
          + '<input type="range" id="zm" min="0.3" max="4" step="0.01" value="'+c.crop.z+'">'
          + '<button class="btn" id="zin">+</button></div>';
+      h += '<div class="sl lk"><span class="lab">Horizontal</span><button class="nd" data-nudge="-1">◀</button><input type="range" id="pdx" min="-40" max="40" step="0.5" value="'+(+c.crop.dx.toFixed(1))+'"><button class="nd" data-nudge="1">▶</button><b id="pdxV">'+(+c.crop.dx.toFixed(1))+' mm</b></div>';
+      h += '<div class="sl lk"><span class="lab">Vertical</span><button class="nd" data-nudge="-1">◀</button><input type="range" id="pdy" min="-60" max="60" step="0.5" value="'+(+c.crop.dy.toFixed(1))+'"><button class="nd" data-nudge="1">▶</button><b id="pdyV">'+(+c.crop.dy.toFixed(1))+' mm</b></div>';
       h += '<div class="meta lk">Glissez l\'image pour la cadrer, pincez pour zoomer. En dessous de 100 %, l\'image entière apparaît.</div>';
     }
   }
+  if(!c.land){
+    h += '<div class="lk"><span class="lab">Texte d\'ambiance</span><div class="typerow"><div class="minipv" id="mpFlav"></div>'
+       + '<textarea id="cflav" placeholder="Une petite phrase… Furigana : 大好（だいす）き">'+esc(c.flavor||"")+'</textarea></div></div>';
+    h += '<details class="lay lk" id="clayBox"'+(E.layOpen?' open':'')+'><summary>📐 Mise en page de cette carte'+(c.lay && Object.keys(c.lay).length ? ' (personnalisée)' : '')+'</summary>'
+       + layHTML(layOf(c))
+       + '<div class="row" style="margin-top:8px"><button class="btn gh" id="clayReset">Revenir à la mise en page générale</button></div></details>';
+  }
   h += '<div class="row lk"><span class="lab">Deck</span><select id="cdeck" style="flex:1">'+opts+'</select></div>';
+  if(!c.land) h += '<div class="row lk"><span class="lab">Logo</span><div class="seg"><button data-mk="1" class="'+(c.noMark?"":"on")+'">'+(deckSide(c.deck)==="ami"?"😊":"😠")+' Affiché</button><button data-mk="0" class="'+(c.noMark?"on":"")+'">Sans logo</button></div></div>';
+  if(!c.land){
+    var so = '<option value="">Par défaut ('+esc((styleById(P.nameStyle)||{}).label||"")+')</option>';
+    P.nameStyles.forEach(function(st){ so += '<option value="'+st.id+'"'+(c.ns===st.id?' selected':'')+'>'+esc(st.label)+'</option>'; });
+    h += '<div class="row lk"><span class="lab">Style du nom</span><select id="cns" style="flex:1">'+so+'</select><button class="btn" id="cstudio">✏️</button></div>';
+    if(cardStyle(c).type==="comic"){
+      var na = c.na || {};
+      var sl = function(k, label, min, max, step, def, unit){
+        var v = na[k] !== undefined ? na[k] : def;
+        return '<div class="sl lk"><span class="lab">'+label+'</span><button class="nd" data-nudge="-1">◀</button><input type="range" data-na="'+k+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+v+'"><button class="nd" data-nudge="1">▶</button><b id="na_'+k+'">'+(k==="size"?v+" %":v+unit)+'</b></div>';
+      };
+      h += '<div class="meta lk">Ajustements pour cette carte seulement :</div>'
+         + sl("size","Taille",40,160,5,100,"") + sl("skew","Inclinaison",-30,30,1,0,"°") + sl("rot","Rotation",-30,30,1,0,"°")
+         + sl("curve","Courbe",-8,8,.5,0,"") + sl("dy","Hauteur",-6,40,.5,0," mm") + sl("dx","Horizontal",-15,15,.5,0," mm")
+         + '<div class="row lk"><button class="btn gh" id="naReset">Réinitialiser les ajustements</button></div>';
+    }
+  }
+  h += '<div class="row lk"><span class="lab">Couleur</span><button class="btn" id="ccol" style="flex:1;display:flex;align-items:center;gap:8px;justify-content:center">'
+     + '<i style="width:18px;height:18px;border-radius:50%;display:inline-block;background:'+(c.color||deckColor(c.deck))+'"></i>'
+     + (c.color ? 'Couleur de la carte' : 'Couleur du deck') + '</button></div>';
   h += '<div class="row"><button class="btn" id="print">'+(c.print ? "🖨️ À imprimer" : "⬜️ Ne pas imprimer")+'</button>'
      + '<div style="flex:1"></div><button class="btn lk" id="dup">Dupliquer</button><button class="btn warn lk" id="del">Supprimer</button></div>';
   $("form").innerHTML = h;
@@ -831,17 +1270,76 @@ function renderEditor(){
       save(); renderPreview();
     };
   });
+  // pendant la saisie, une petite carte s'affiche juste à côté du champ :
+  // elle reste visible même quand le clavier pousse la grande carte hors de l'écran
+  // n'affiche que la zone utile, en plus grand : le haut (nom) ou le bas (texte d'ambiance)
+  function mini(id){
+    var box = $(id); if(!box) return;
+    var w = 150, k = w/(P.cardW*MM), full = P.cardH*MM*k;
+    var part = id==="mpName" ? .3 : .5, vis = full*part, off = id==="mpName" ? 0 : vis - full;
+    box.style.width = w+"px"; box.style.height = vis+"px";
+    box.innerHTML = "";
+    var ce = cardEl(c); ce.style.transform = "translateY("+off+"px) scale("+k+")"; box.appendChild(ce);
+  }
+  function typing(fieldId, boxId){
+    var f = $(fieldId), box = $(boxId); if(!f || !box) return;
+    f.addEventListener("focus", function(){ box.classList.add("on"); mini(boxId); });
+    f.addEventListener("blur", function(){ box.classList.remove("on"); });
+    f.addEventListener("input", function(){ mini(boxId); });
+  }
   if($("cname")) $("cname").oninput = function(){ c.name = this.value; save(); renderPreview(); };
+  typing("cflav", "mpFlav");
   $("cdeck").onchange = function(){ c.deck = this.value; save(); renderEditor(); };
+  if($("cflav")){
+    $("cflav").oninput = function(){
+      c.flavor = this.value;
+      if(c.flavor && !layOf(c).fbOn){ c.lay = c.lay || {}; c.lay.fbOn = true; } // écrire un texte affiche le cadre
+      renderPreview();
+    };
+    $("cflav").onchange = function(){ save(); };
+    $("clayBox").ontoggle = function(){ E.layOpen = this.open; };
+    var keep = function(){ var f = $("form"), t = f.scrollTop; return function(){ f.scrollTop = t; }; };
+    bindLay($("clayBox"), function(){ return layOf(c); },
+      function(k, v){ c.lay = c.lay || {}; if(v===undefined) delete c.lay[k]; else c.lay[k] = v; save(); },
+      function(full){ if(full){ var back = keep(); renderEditor(); back(); } else renderPreview(); });
+    $("clayReset").onclick = function(){ var back = keep(); delete c.lay; save(); renderEditor(); back(); };
+  }
+  F.querySelectorAll("[data-mk]").forEach(function(b){
+    b.onclick = function(){ if(b.dataset.mk==="0") c.noMark = true; else delete c.noMark; save(); renderEditor(); };
+  });
+  if($("cns")){
+    $("cns").onchange = function(){ if(this.value) c.ns = this.value; else delete c.ns; save(); renderEditor(); };
+    $("cstudio").onclick = function(){ openStudio(cardStyle(c).id); };
+  }
+  F.querySelectorAll("input[data-na]").forEach(function(r){
+    r.oninput = function(){
+      c.na = c.na || {}; c.na[r.dataset.na] = +r.value;
+      $("na_"+r.dataset.na).textContent = r.value + ({size:" %",skew:"°",rot:"°",curve:"",dy:" mm",dx:" mm"}[r.dataset.na]);
+      renderPreview();
+    };
+    r.onchange = save;
+  });
+  if($("naReset")) $("naReset").onclick = function(){ delete c.na; save(); renderEditor(); };
+  $("ccol").onclick = function(){
+    pickColor("cette carte", c.color || deckColor(c.deck), function(col){
+      if(col) c.color = col; else delete c.color;
+      save(); renderEditor();
+    });
+  };
   if($("pick")) $("pick").onclick = function(){ $("file").click(); };
   if($("rot")) $("rot").onclick = function(){ c.crop.rot = (c.crop.rot + 90) % 360; save(); renderPreview(); };
   if($("recenter")) $("recenter").onclick = function(){ c.crop = {dx:0, dy:0, z:1, rot:c.crop.rot}; save(); renderPreview(); updateImg(); };
   if($("nophoto")) $("nophoto").onclick = function(){ var old = c.photo; c.photo = null; save(); dropPhotoIfUnused(old); renderEditor(); };
+  if($("pdx")){
+    $("pdx").oninput = function(){ c.crop.dx = +this.value; updateImg(); };
+    $("pdy").oninput = function(){ c.crop.dy = +this.value; updateImg(); };
+    $("pdx").onchange = $("pdy").onchange = save;
+  }
   if($("zm")){
     $("zm").oninput = function(){ c.crop.z = +this.value; updateImg(); };
     $("zm").onchange = save;
-    $("zin").onclick = function(){ c.crop.z = Math.min(4, +(c.crop.z*1.15).toFixed(3)); updateImg(); save(); };
-    $("zout").onclick = function(){ c.crop.z = Math.max(.3, +(c.crop.z/1.15).toFixed(3)); updateImg(); save(); };
+    $("zin").onclick = function(){ c.crop.z = Math.min(4, +(c.crop.z*1.075).toFixed(3)); updateImg(); save(); };
+    $("zout").onclick = function(){ c.crop.z = Math.max(.3, +(c.crop.z/1.075).toFixed(3)); updateImg(); save(); };
   }
   $("print").onclick = function(){ c.print = !c.print; save(); renderEditor(); };
   $("dup").onclick = function(){
@@ -876,6 +1374,8 @@ $("edLock").onclick = function(){ var c = edCard(); c.locked = !c.locked; putCar
   function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
   pv.addEventListener("pointerdown", function(e){
     var c = edCard(); if(!c || c.locked || c.land || !c.photo) return;
+    // on ne cadre l'image que si le doigt part de la carte elle-même (pas de l'espace gris autour)
+    if(!ptrs[e.pointerId] && !Object.keys(ptrs).length && !$("holder").contains(e.target)) return;
     pv.setPointerCapture(e.pointerId);
     ptrs[e.pointerId] = {x:e.clientX, y:e.clientY};
     var p = pts();
@@ -1103,9 +1603,15 @@ function openSettings(){
   h += '<div class="sec" style="border:0;margin-top:0;padding-top:0">Cartes</div>';
   h += '<div class="grid2">'
      + '<div class="field"><span class="lab">Style</span><select id="sStyle"><option value="cute">Mignon</option><option value="classic">Classique</option></select></div>'
+     + '<div class="field"><span class="lab">Attaque / Endurance</span><select id="sStat"><option value="round">Ronds avec épée et bouclier</option><option value="shape">Étoile ⭐ et bouclier 🛡️</option></select></div>'
      + '<div class="field"><span class="lab">Ami / Ennemi</span><select id="sMarker"><option value="sym">Visages 😊 / 😠</option><option value="ban">Bandeau AMI / ENNEMI</option><option value="none">Aucun</option></select></div>'
      + '<div class="field"><span class="lab">Bordure (mm)</span><input type="number" id="sFrame" step="0.5" min="0" max="10"></div>'
      + '</div>';
+  h += '<div class="row" style="margin-top:12px"><button class="btn acc" id="sStudio" style="flex:1">✏️ Studio des styles de nom…</button></div>';
+  h += '<div class="row" style="margin-top:12px"><button class="btn" id="sLay" style="flex:1">📐 Mise en page : cadre de texte, force et endurance…</button></div>';
+  h += '<label class="row meta" style="margin-top:12px"><input type="checkbox" id="sColl" style="width:20px;height:20px;accent-color:var(--accent)"> <b>Cartes de collection</b> : seulement l\'image et le nom (sans cœurs, force, endurance ni logo)</label>';
+  h += '<label class="row meta" style="margin-top:12px"><input type="checkbox" id="sHv" style="width:20px;height:20px;accent-color:var(--accent)"> Cœurs verticaux en haut à droite</label>';
+  h += '<div class="row" style="margin-top:12px"><span class="lab">Bandeau du nom</span><input type="range" id="sBo" min="0" max="100" step="5" style="flex:1"><b id="sBoV" style="min-width:44px;text-align:right"></b></div>';
   h += '<div class="sec">Feuille A4</div>';
   h += '<div class="grid2">'
      + '<div class="field"><span class="lab">Largeur carte (mm)</span><input type="number" id="sW" step="0.5"></div>'
@@ -1128,6 +1634,17 @@ function openSettings(){
   }
   num("sFrame","frame",0,10); num("sW","cardW",20,200); num("sH","cardH",20,280); num("sG","gap",0,30); num("sT","top",0,60); num("sB","bleed",0,20); num("sC","comp",80,120);
   $("sStyle").onchange = function(){ P.style = this.value; saveP(); refresh(); };
+  var bo = P.bandOp !== undefined ? P.bandOp : (P.style==="cute" ? 100 : 95);
+  $("sBo").value = bo; $("sBoV").textContent = bo + " %";
+  $("sBo").oninput = function(){ P.bandOp = +this.value; $("sBoV").textContent = this.value + " %"; saveP(); refresh(); };
+  $("sStudio").onclick = function(){ openStudio(); };
+  $("sLay").onclick = openLayout;
+  $("sColl").checked = !!P.collection;
+  $("sColl").onchange = function(){ P.collection = this.checked; saveP(); refresh(); toast(this.checked ? "Mode cartes de collection" : "Mode cartes de jeu"); };
+  $("sHv").checked = !!P.heartsV;
+  $("sHv").onchange = function(){ P.heartsV = this.checked; saveP(); refresh(); };
+  $("sStat").value = P.statStyle || "round";
+  $("sStat").onchange = function(){ P.statStyle = this.value; saveP(); refresh(); };
   $("sMarker").onchange = function(){ P.marker = this.value; saveP(); refresh(); };
   $("sM").onchange = function(){ P.marks = this.checked; saveP(); refresh(); };
   $("sExp").onclick = exportAll;
@@ -1191,6 +1708,26 @@ function doImport(d){
     });
 }
 
+/* ---------- choix de couleur (pastilles, sans dépendre du sélecteur du téléphone) ---------- */
+var SWATCHES = ["#ff7aa8","#f78fd6","#ff8fc8","#ffb3c7","#e0558f","#ff6b6b","#ffad5c","#e0a43a","#ffd166",
+                "#6cc070","#3fbf9f","#5ab8f0","#4f8fe6","#7b6fd6","#b57cf0","#c08b5c","#8e9fb8","#5a3d55"];
+function pickColor(title, cur, fn){
+  var h = '<h2>Couleur · '+esc(title)+'</h2><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:6px 0 14px">';
+  SWATCHES.forEach(function(c){
+    h += '<button data-c="'+c+'" style="aspect-ratio:1;border-radius:50%;background:'+c+';border:3px solid '+(cur===c?'#2b2230':'#fff')+';box-shadow:0 0 0 1px var(--line)"></button>';
+  });
+  h += '</div><div class="row"><span class="lab">Autre</span><input type="color" id="pcOther" value="'+(cur||"#ff7aa8")+'"><button class="btn" id="pcOk">Utiliser</button></div>';
+  h += '<div class="row" style="margin-top:12px"><button class="btn gh" id="pcReset">Reprendre la couleur du deck</button><div style="flex:1"></div><button class="btn" id="pcClose">Annuler</button></div>';
+  $("sheetIn").innerHTML = h;
+  $("sheetIn").querySelectorAll("[data-c]").forEach(function(b){
+    b.onclick = function(){ closeSheet(); fn(b.dataset.c); };
+  });
+  $("pcOk").onclick = function(){ closeSheet(); fn($("pcOther").value); };
+  $("pcReset").onclick = function(){ closeSheet(); fn(null); };
+  $("pcClose").onclick = closeSheet;
+  $("sheet").classList.add("on");
+}
+
 /* ---------- confirmation intégrée (confirm() est bloqué dans certains affichages) ---------- */
 function ask(msg, okLabel, fn, danger){
   var box = $("ask");
@@ -1203,6 +1740,18 @@ function ask(msg, okLabel, fn, danger){
   box.classList.add("on");
 }
 
+/* flèches ◀ ▶ : avancent le curseur voisin d'un cran */
+document.addEventListener("click", function(e){
+  var b = e.target.closest && e.target.closest("[data-nudge]");
+  if(!b) return;
+  var r = b.parentNode.querySelector('input[type=range]');
+  if(!r) return;
+  var st = parseFloat(r.step) || 1, v = parseFloat(r.value) + st * (+b.dataset.nudge);
+  v = Math.max(parseFloat(r.min), Math.min(parseFloat(r.max), v));
+  r.value = +v.toFixed(3);
+  r.dispatchEvent(new Event("input")); r.dispatchEvent(new Event("change"));
+});
+
 /* ---------- divers ---------- */
 var tt = null;
 function toast(msg, ms){
@@ -1210,6 +1759,21 @@ function toast(msg, ms){
   clearTimeout(tt); tt = setTimeout(hideToast, ms || 2600);
 }
 function hideToast(){ $("toast").classList.remove("on"); }
+// clavier ouvert (iPhone) : la fiche se cale sur la zone encore visible,
+// pour que la carte reste à l'écran pendant qu'on écrit
+(function(){
+  var vv = window.visualViewport; if(!vv) return;
+  var t = null;
+  function fit(){
+    var ed = $("ed");
+    ed.style.height = vv.height + "px";
+    ed.style.top = vv.offsetTop + "px";
+    ed.classList.toggle("typing", vv.height < window.innerHeight * 0.8);
+    clearTimeout(t); t = setTimeout(function(){ if(S.edit) renderPreview(); }, 60);
+  }
+  vv.addEventListener("resize", fit);
+  vv.addEventListener("scroll", fit);
+})();
 window.addEventListener("resize", function(){
   if(S.edit) renderPreview();
   if(S.view==="print") sizePages();
