@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Cartes — atelier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +23,8 @@
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* pas de zoom de l'écran au double tap (les boutons + / ◀ ▶ se touchent souvent deux fois) */
+html,body,button,input,select,label,.item,.sheet,.ed{touch-action:manipulation}
 html,body{margin:0;padding:0;height:100%}
 body{background:var(--ws);color:var(--ink);font-family:var(--sans);font-size:15px;overflow:hidden;overscroll-behavior:none}
 button,input,select{font:inherit;color:inherit}
@@ -118,6 +120,8 @@ input[type=range]{flex:1;accent-color:var(--accent)}
 .slotbox.used{border:.4mm dashed #d9cfd7;border-radius:1mm;background:repeating-linear-gradient(45deg,#faf6f9,#faf6f9 2mm,#fff 2mm,#fff 4mm)}
 .slotbox.cut::after{content:"";position:absolute;pointer-events:none;border:.2mm dashed rgba(224,85,143,.6)}
 .mark{position:absolute;background:var(--mark)}
+.exporting .scr,.exporting .win .hint,.exporting .slotbox.used,.exporting .edge{display:none!important}
+.exporting .pw{box-shadow:none}
 
 /* réglages */
 .sheet{position:fixed;inset:0;z-index:30;background:rgba(43,34,48,.4);display:none;align-items:flex-end;justify-content:center}
@@ -126,7 +130,15 @@ input[type=range]{flex:1;accent-color:var(--accent)}
   padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
 .sheet h2{margin:0 0 10px;font-family:var(--round);font-size:18px}
 .sec{margin:16px 0 8px;font-family:var(--round);font-weight:800;font-size:14px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+/* pas de défilement de côté : le contenu se plie à la largeur de l'écran */
+.sheet .in,.ed .form{overflow-x:hidden;touch-action:pan-y}
+.sheet .btn,.ed .form .btn{white-space:normal}
+.sheet .row,.ed .form .row{flex-wrap:wrap}
+.sheet label.row,.ed .form label.row{flex-wrap:nowrap;align-items:flex-start}
+.sheet label.row input,.ed .form label.row input{flex:0 0 auto}
+.sheet select,.sheet input[type=text],.sheet input[type=number]{max-width:100%}
+input[type=range]{min-width:0;touch-action:pan-y}
 .field{display:flex;flex-direction:column;gap:4px}
 .field input,.field select{width:100%}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:40;
@@ -200,7 +212,13 @@ textarea{width:100%;min-height:56px;padding:8px 10px;border:1px solid var(--line
 .ov .spk{z-index:0}
 .ov .band,.ov .nsvg,.ov .hearts,.ov .heartsv,.ov .flav,.ov .stat,.ov .shp,.ov .side{z-index:2}
 /* style mignon */
-.bleed.cute{background-image:radial-gradient(circle, rgba(255,255,255,.5) 22%, transparent 25%);background-size:3.4mm 3.4mm;background-position:1.7mm 1.7mm}
+/* bordure du style mignon : brillance douce (défaut), paillettes, pois ou unie */
+.bleed.b-shine,.bleed.b-sparkle{background-image:linear-gradient(135deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,0) 58%, rgba(255,255,255,.28) 72%, rgba(255,255,255,0) 86%, rgba(0,0,0,.08) 100%)}
+.bspk{position:absolute;transform:translate(-50%,-50%);line-height:1;color:#fff;pointer-events:none;text-shadow:0 0 .4mm rgba(255,255,255,.8)}
+.bleed.b-plain{background-image:none}
+/* pois de la bordure : motif image (et non dégradé) pour qu'ils sortent aussi dans l'export photo */
+.bleed.b-dots{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='9.4' fill='%23fff' fill-opacity='.5'/%3E%3C/svg%3E");
+  background-size:3.4mm 3.4mm;background-position:1.7mm 1.7mm;background-repeat:repeat}
 .cute .win{border-radius:3.5mm;border:.8mm solid #fff}
 .cute .win.landw{background-color:#fff;background-image:radial-gradient(circle, var(--cc2) 18%, transparent 21%);background-size:5mm 5mm}
 .cute .band{left:1.6mm;right:1.6mm;top:1.6mm;border-radius:3mm;border:.6mm solid var(--cc);background:rgba(255,255,255,var(--bo,1));align-items:center;text-align:center}
@@ -274,6 +292,7 @@ textarea{width:100%;min-height:56px;padding:8px 10px;border:1px solid var(--line
 </div></div>
 <input type="file" id="file" accept="image/*,.heic,.heif" hidden>
 <input type="file" id="fileMulti" accept="image/*,.heic,.heif" multiple hidden>
+<input type="file" id="fileBack" accept="image/*,.heic,.heif" hidden>
 <input type="file" id="fileImp" accept="application/json,.json" hidden>
 
 <script>
@@ -760,7 +779,7 @@ function recData(r){
 }
 function dropPhotoIfUnused(pid){
   if(!pid) return;
-  if(S.cards.some(function(c){ return c.photo===pid; })) return;
+  if(S.cards.some(function(c){ return c.photo===pid; }) || P.backPhoto===pid) return;
   idb("photos","readwrite",function(st){ return st.delete(pid); });
   delete S.photos[pid]; delete S.aspect[pid];
 }
@@ -771,16 +790,36 @@ function imgTransform(c, f){
   var cr = c.crop;
   return "translate(-50%,-50%) translate("+(cr.dx*f)+"mm,"+(cr.dy*f)+"mm) rotate("+cr.rot+"deg) scale("+cr.z+")";
 }
+// paillettes dans la bordure : placées « au hasard » mais toujours pareil pour une même carte
+function borderSparkles(bl, c, w, h, bx, by, T){
+  var seed = 0, id = String(c.id || c.name || "x");
+  for(var i=0;i<id.length;i++) seed = (seed*31 + id.charCodeAt(i)) >>> 0;
+  function rnd(){ seed = (seed*1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+  var per = 2*(w + h), n = 11, html = "";
+  for(var k=0;k<n;k++){
+    var t = (k + rnd()*.8) / n * per, x, y;
+    var inset = T/2 + (rnd()-.5)*T*.35;
+    if(t < w){ x = t; y = inset; }
+    else if(t < w + h){ x = w - inset; y = t - w; }
+    else if(t < 2*w + h){ x = w - (t - w - h); y = h - inset; }
+    else { x = inset; y = h - (t - 2*w - h); }
+    var sz = 1.3 + rnd()*1.7, star = rnd() < .75 ? "✦" : "♥";
+    html += '<span class="bspk" style="left:'+(bx + x)+'mm;top:'+(by + y)+'mm;font-size:'+sz+'mm;opacity:'+(.65 + rnd()*.35)+'">'+star+'</span>';
+  }
+  bl.insertAdjacentHTML("beforeend", html);
+}
 function cardEl(c, f, bx, by){
   f = f || 1; bx = bx || 0; by = by || 0;
   var w = P.cardW*f, h = P.cardH*f, T = P.frame*f;
   var col = c.color || deckColor(c.deck), side = deckSide(c.deck), cute = P.style==="cute";
   var bl = document.createElement("div");
-  bl.className = "bleed" + (cute ? " cute" : "");
+  var bs = P.borderStyle || "shine"; // shine | sparkle | dots | plain
+  bl.className = "bleed" + (cute ? " cute" : "") + (cute ? " b-" + bs : "");
   bl.style.cssText = "width:"+(w+2*bx)+"mm;height:"+(h+2*by)+"mm;background-color:"+col;
   bl.style.setProperty("--cc", col);
   bl.style.setProperty("--cc2", rgba(col, .16));
   if(P.bandOp !== undefined) bl.style.setProperty("--bo", P.bandOp/100);
+  if(cute && bs==="sparkle") borderSparkles(bl, c, w, h, bx, by, T);
 
   var ww = w - 2*T, wh = h - 2*T;
   var win = document.createElement("div");
@@ -864,6 +903,7 @@ function cardEl(c, f, bx, by){
   if(side==="none" || coll) c = Object.assign({}, c, {noMark:true});
   if(P.marker==="sym" && !c.noMark) hh += '<div class="side sym">' + (side==="ami" ? FACE_AMI : FACE_ENN) + '</div>';
   if(P.marker==="ban" && !c.noMark) hh += '<div class="side ban '+side+'">' + (side==="ami" ? "AMI" : "ENNEMI") + '</div>';
+  if(window.EXPORTING) hh = hh.split("var(--cc2)").join(rgba(col,.16)).split("var(--cc)").join(col);
   ov.innerHTML = hh;
   bl.appendChild(ov);
   return bl;
@@ -1456,13 +1496,28 @@ $("file").addEventListener("change", function(){
 });
 
 /* ---------- impression ---------- */
+/* formats : feuille A4 (impression), ou tirage photo de konbini exporté en JPEG
+   L = 89 × 127 mm à l'horizontale (2 cartes), 2L = 127 × 178 mm (4 cartes) */
+var PAPERS = {
+  a4: { w:210, h:297, label:"Feuille A4", photo:false },
+  L:  { w:127, h:89,  label:"Photo L · 89×127 mm · 2 cartes", photo:true },
+  "2L": { w:127, h:178, label:"Photo 2L · 127×178 mm · 4 cartes", photo:true }
+};
+function paper(){ return PAPERS[P.paper] || PAPERS.a4; }
 function geom(){
-  var f = P.comp/100;
-  var w = P.cardW*f, h = P.cardH*f, g = P.gap*f, t = P.top*f;
+  var pp = paper(); PW = pp.w; PH = pp.h;
+  // en photo, les cartes sont légèrement réduites (marge de sécurité contre le rognage de la borne)
+  var ps = pp.photo ? (P.photoScale !== undefined ? P.photoScale : 96.5)/100 : 1;
+  var f = P.comp/100 * ps;
+  var w = P.cardW*f, h = P.cardH*f;
+  var g = (pp.photo ? (P.photoGap !== undefined ? P.photoGap : 2) : P.gap)*f, t = pp.photo ? 0 : P.top*f;
   var cols = Math.max(1, Math.floor((PW + g)/(w + g)));
   var rows = Math.max(1, Math.floor((PH - t + g)/(h + g)));
+  if(pp.photo) t = (PH - rows*h - (rows-1)*g)/2; // photo : cartes centrées
   var gw = cols*w + (cols-1)*g, b = P.bleed/100;
-  return { f:f, w:w, h:h, g:g, t:t, cols:cols, rows:rows, bx:w*b/2, by:h*b/2, gw:gw, x0:(PW-gw)/2 };
+  // le fond perdu ne dépasse jamais la moitié de l'écart : deux cartes voisines ne se chevauchent pas
+  var bx = Math.min(w*b/2, g/2), by = Math.min(h*b/2, g/2);
+  return { f:f, w:w, h:h, g:g, t:t, cols:cols, rows:rows, bx:bx, by:by, gw:gw, x0:(PW-gw)/2, photo:pp.photo };
 }
 // ordre de remplissage : du bas vers le haut (on peut réengager une feuille entamée)
 function fillOrder(G){
@@ -1484,15 +1539,51 @@ function layoutPages(){
 }
 function renderPrintTb(L){
   var per = L.G.cols*L.G.rows;
-  var h = '<div class="row"><span class="meta" style="flex:1"><b>'+L.n+'</b> cartes cochées → <b>'+L.pages.length+'</b> feuille'+(L.pages.length>1?"s":"")+' A4 ('+per+' par feuille)</span>'
-        + '<button class="btn acc" id="doPrint">Imprimer</button></div>';
+  var po = ""; Object.keys(PAPERS).forEach(function(k){ po += '<option value="'+k+'"'+((P.paper||"a4")===k?' selected':'')+'>'+PAPERS[k].label+'</option>'; });
+  var h = '<div class="row"><span class="lab" style="min-width:0">Format</span><select id="paper" style="flex:1">'+po+'</select></div>';
+  h += '<div class="row"><span class="meta" style="flex:1"><b>'+L.n+'</b> cartes cochées → <b>'+L.pages.length+'</b> '
+     + (L.G.photo ? 'photo'+(L.pages.length>1?"s":"") : 'feuille'+(L.pages.length>1?"s":"")+' A4')+' ('+per+' par '+(L.G.photo?'photo':'feuille')+')</span>'
+     + (L.G.photo ? '<button class="btn acc" id="doExport">📷 Exporter en JPEG</button>' : '<button class="btn acc" id="doPrint">Imprimer</button>') + '</div>';
+  if(L.G.photo){
+    h += '<div class="row"><span class="lab" style="min-width:0;flex:1">Écart entre les cartes</span>'
+       + '<div class="stp"><button id="pgm">−</button><b>'+(P.photoGap !== undefined ? P.photoGap : 2)+' mm</b><button id="pgp">+</button></div></div>';
+    var ps = P.photoScale !== undefined ? P.photoScale : 96.5;
+    h += '<div class="row"><span class="lab" style="min-width:0;flex:1">Taille des cartes<br><span class="meta">'+(L.G.w).toFixed(1).replace(".",",")+' × '+(L.G.h).toFixed(1).replace(".",",")+' mm</span></span>'
+       + '<div class="stp"><button id="psm">−</button><b>'+ps+' %</b><button id="psp">+</button></div></div>';
+    h += '<label class="row meta"><input type="checkbox" id="cmk"'+(P.cornerMarks!==false?' checked':'')+' style="width:20px;height:20px;accent-color:var(--accent)"> Repères de coupe aux angles des cartes</label>';
+    h += '<div class="meta">Au konbini : choisissez le tirage <b>'+(P.paper==="L"?"L判":"2L判")+'</b>. Faites d\'abord un essai et mesurez une carte : si elle est trop petite ou rognée, ajustez la « Correction d\'échelle » dans ⚙︎.</div>';
+  }
+  h += '<div class="row"><span class="lab" style="min-width:0">Côté</span><div class="seg"><button data-side="face" class="'+(S.printBack?'':'on')+'">Faces</button><button data-side="back" class="'+(S.printBack?'on':'')+'">Dos</button></div>'
+     + (S.printBack ? '<button class="btn" id="backPick" style="flex:1">'+(P.backPhoto && S.photos[P.backPhoto] ? 'Changer l\'image du dos' : 'Choisir l\'image du dos')+'</button>' : '') + '</div>';
+  if(S.printBack){
+    h += '<div class="row"><span class="lab" style="min-width:0">Ajustement</span><div class="seg"><button data-bfit="cover" class="'+((P.backFit||"cover")==="cover"?'on':'')+'">Remplir</button><button data-bfit="fill" class="'+(P.backFit==="fill"?'on':'')+'">Étirer</button><button data-bfit="contain" class="'+(P.backFit==="contain"?'on':'')+'">Entière</button></div></div>';
+    h += '<div class="meta">Les dos sont placés en miroir : imprimez-les au verso de la même feuille (retournement sur le bord long), ou sur une autre photo à coller.</div>';
+  }
   h += '<div class="row"><span class="lab" style="min-width:0;flex:1">Emplacements déjà utilisés sur la 1<sup>re</sup> feuille</span>'
      + '<div class="stp"><button id="skm">−</button><b>'+P.skip+'</b><button id="skp">+</button></div></div>';
   h += '<div class="row"><span class="lab" style="min-width:0">Zoom</span><button class="btn" id="pzo">−</button>'
      + '<button class="btn" id="pzf">'+Math.round(P.zoom*100)+' %</button><button class="btn" id="pzi">+</button>'
      + '<span class="meta" style="flex:1;text-align:right">Les cartes se placent du bas vers le haut.</span></div>';
   $("printTb").innerHTML = h;
-  $("doPrint").onclick = doPrint;
+  if($("doPrint")) $("doPrint").onclick = doPrint;
+  if($("doExport")) $("doExport").onclick = exportPhotos;
+  $("printTb").querySelectorAll("[data-side]").forEach(function(b){
+    b.onclick = function(){ S.printBack = b.dataset.side==="back"; renderPrint(); };
+  });
+  $("printTb").querySelectorAll("[data-bfit]").forEach(function(b){
+    b.onclick = function(){ P.backFit = b.dataset.bfit; saveP(); renderPrint(); };
+  });
+  if($("backPick")) $("backPick").onclick = function(){ $("fileBack").click(); };
+  $("paper").onchange = function(){ P.paper = this.value; P.skip = 0; saveP(); renderPrint(); };
+  if($("psm")){
+    var sp = function(d){ var v = (P.photoScale !== undefined ? P.photoScale : 96.5) + d; P.photoScale = Math.max(80, Math.min(105, +v.toFixed(1))); saveP(); renderPrint(); };
+    $("psm").onclick = function(){ sp(-.5); }; $("psp").onclick = function(){ sp(.5); };
+    $("cmk").onchange = function(){ P.cornerMarks = this.checked; saveP(); renderPrint(); };
+  }
+  if($("pgm")){
+    var gp = function(d){ var v = (P.photoGap !== undefined ? P.photoGap : 2) + d; P.photoGap = Math.max(0, Math.min(10, +v.toFixed(1))); saveP(); renderPrint(); };
+    $("pgm").onclick = function(){ gp(-.5); }; $("pgp").onclick = function(){ gp(.5); };
+  }
   $("skm").onclick = function(){ P.skip = Math.max(0, P.skip-1); saveP(); renderPrint(); };
   $("skp").onclick = function(){ P.skip = Math.min(per-1, P.skip+1); saveP(); renderPrint(); };
   $("pzo").onclick = function(){ setZoom(P.zoom/1.25); };
@@ -1515,24 +1606,31 @@ function sizePages(){
   $("pages").style.alignItems = P.zoom > 1 ? "flex-start" : "center";
 }
 function renderPrint(){
-  var L = layoutPages(), G = L.G, box = $("pages");
+  var L = layoutPages(), box = $("pages");
   renderPrintTb(L);
   box.innerHTML = "";
   if(!L.pages.length){
     box.innerHTML = '<div class="empty-list">Aucune carte à imprimer.<br>Cochez 🖨️ les cartes dans <b>Mes cartes</b>.</div>';
     return;
   }
+  buildPages(L, box);
+  sizePages();
+}
+function buildPages(L, box){
+  var G = L.G;
   L.pages.forEach(function(pg){
     var pw = document.createElement("div"); pw.className = "pw";
     var page = document.createElement("div"); page.className = "page";
-    page.innerHTML = '<div class="edge">haut de la feuille</div>';
+    page.style.width = PW + "mm"; page.style.height = PH + "mm";
+    page.innerHTML = G.photo ? '' : '<div class="edge">haut de la feuille</div>';
     Object.keys(pg.slots).forEach(function(k){
       var i = +k, r = Math.floor(i/G.cols), col = i % G.cols;
+      if(S.printBack) col = G.cols - 1 - col; // verso : colonnes inversées pour tomber pile derrière chaque carte
       var x = G.x0 + col*(G.w+G.g), y = G.t + r*(G.h+G.g);
       var sb = document.createElement("div");
       sb.className = "slotbox";
       sb.style.cssText = "left:"+(x-G.bx)+"mm;top:"+(y-G.by)+"mm;width:"+(G.w+2*G.bx)+"mm;height:"+(G.h+2*G.by)+"mm";
-      sb.appendChild(cardEl(pg.slots[k], G.f, G.bx, G.by));
+      sb.appendChild(S.printBack ? backEl(G) : cardEl(pg.slots[k], G.f, G.bx, G.by));
       var cut = document.createElement("div");
       cut.className = "scr";
       cut.style.cssText = "position:absolute;left:"+G.bx+"mm;top:"+G.by+"mm;width:"+G.w+"mm;height:"+G.h+"mm;border:.2mm dashed rgba(224,85,143,.7);pointer-events:none";
@@ -1547,14 +1645,68 @@ function renderPrint(){
       page.appendChild(sb);
     });
     if(P.marks) drawMarks(page, G, Object.keys(pg.slots).map(Number));
+    if(G.photo && P.cornerMarks !== false) cornerMarks(page, G, Object.keys(pg.slots).map(Number));
     pw.appendChild(page); box.appendChild(pw);
   });
-  sizePages();
+}
+// petites équerres discrètes autour de chaque coin, dans l'espace entre les cartes :
+// elles montrent où placer la règle et partent à la coupe
+/* dos de carte : l'image choisie couvre la carte et son fond perdu */
+function backEl(G){
+  var bw = G.w + 2*G.bx, bh = G.h + 2*G.by;
+  var bl = document.createElement("div");
+  bl.className = "bleed";
+  bl.style.cssText = "width:"+bw+"mm;height:"+bh+"mm;background:#fff";
+  var url = P.backPhoto && S.photos[P.backPhoto];
+  if(!url){
+    bl.innerHTML = '<div class="hint scr" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--round);font-size:3mm;color:#c9bfc7">image du dos<br>à choisir</div>';
+    return bl;
+  }
+  var a = aspectOf(P.backPhoto) || (G.w/G.h), fit = P.backFit || "cover";
+  var iw, ih;
+  if(fit==="fill"){ iw = bw; ih = bh; }
+  else {
+    var box = bw/bh, cover = fit==="cover";
+    if((a > box) === cover){ ih = bh; iw = bh*a; } else { iw = bw; ih = bw/a; }
+  }
+  var img = document.createElement("img");
+  img.src = url; img.draggable = false;
+  img.style.cssText = "position:absolute;left:"+((bw-iw)/2)+"mm;top:"+((bh-ih)/2)+"mm;width:"+iw+"mm;height:"+ih+"mm;max-width:none";
+  bl.appendChild(img);
+  return bl;
+}
+$("fileBack").addEventListener("change", function(){
+  var f = this.files && this.files[0]; this.value = "";
+  if(!f) return;
+  toast("Chargement du dos…");
+  importPhoto(f).then(function(pid){
+    var old = P.backPhoto; P.backPhoto = pid; saveP();
+    if(old && old !== pid) dropPhotoIfUnused(old);
+    renderPrint(); hideToast();
+  });
+});
+function cornerMarks(page, G, idx){
+  var L = 2.2, T = .22, off = .45, col = "rgba(43,34,48,.55)";
+  function seg(x, y, w, h){
+    var m = document.createElement("div");
+    m.style.cssText = "position:absolute;left:"+x+"mm;top:"+y+"mm;width:"+w+"mm;height:"+h+"mm;background:"+col+";z-index:5";
+    page.appendChild(m);
+  }
+  idx.forEach(function(i){
+    var r = Math.floor(i/G.cols), c = i % G.cols;
+    if(S.printBack) c = G.cols - 1 - c;
+    var x0 = G.x0 + c*(G.w+G.g), y0 = G.t + r*(G.h+G.g), x1 = x0 + G.w, y1 = y0 + G.h;
+    // traits dans le prolongement des bords, posés à l'extérieur de la carte
+    seg(x0 - T/2, y0 - off - L, T, L); seg(x0 - off - L, y0 - T/2, L, T);   // haut gauche
+    seg(x1 - T/2, y0 - off - L, T, L); seg(x1 + off, y0 - T/2, L, T);       // haut droit
+    seg(x0 - T/2, y1 + off, T, L);     seg(x0 - off - L, y1 - T/2, L, T);   // bas gauche
+    seg(x1 - T/2, y1 + off, T, L);     seg(x1 + off, y1 - T/2, L, T);       // bas droit
+  });
 }
 function drawMarks(page, G, idx){
   if(!idx.length) return;
   var rows = {}, cols = {}, minR = 1e9, maxR = -1;
-  idx.forEach(function(i){ var r = Math.floor(i/G.cols); rows[r] = 1; cols[i % G.cols] = 1; minR = Math.min(minR, r); maxR = Math.max(maxR, r); });
+  idx.forEach(function(i){ var r = Math.floor(i/G.cols), c = i % G.cols; if(S.printBack) c = G.cols - 1 - c; rows[r] = 1; cols[c] = 1; minR = Math.min(minR, r); maxR = Math.max(maxR, r); });
   var L = 4, T = .15, PAD = .8;
   function tick(x,y,w,h){
     var m = document.createElement("div"); m.className = "mark";
@@ -1580,6 +1732,61 @@ function drawMarks(page, G, idx){
     });
   });
 }
+/* ---------- export JPEG pour les tirages photo (300 dpi) ---------- */
+function loadH2C(){
+  if(window.html2canvas) return Promise.resolve(true);
+  return new Promise(function(res){
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+    s.onload = function(){ res(true); }; s.onerror = function(){ res(false); };
+    document.head.appendChild(s);
+  });
+}
+function exportPhotos(){
+  var L = layoutPages();
+  if(!L.pages.length){ toast("Rien à exporter."); return; }
+  toast("Préparation des photos…", 60000);
+  loadH2C().then(function(ok){
+    if(!ok){ toast("Impossible de charger l'outil d'export (connexion internet ?)", 5000); return; }
+    // pages rendues à taille réelle, hors écran, sans les repères d'écran
+    var host = document.createElement("div");
+    host.className = "exporting";
+    host.style.cssText = "position:fixed;left:-20000px;top:0;";
+    document.body.appendChild(host);
+    window.EXPORTING = true;
+    buildPages(L, host);
+    window.EXPORTING = false;
+    var pages = host.querySelectorAll(".page"), files = [], i = 0;
+    var scale = 300/96; // 300 dpi
+    function next(){
+      if(i >= pages.length){ host.remove(); deliver(files); return; }
+      toast("Photo " + (i+1) + " / " + pages.length + "…", 60000);
+      window.html2canvas(pages[i], { scale:scale, backgroundColor:"#ffffff", logging:false, useCORS:true }).then(function(cv){
+        cv.toBlob(function(b){
+          files.push(new File([b], (S.printBack ? "dos-" : "cartes-") + (P.paper||"L") + "-" + String(i+1).padStart(2,"0") + ".jpg", {type:"image/jpeg"}));
+          i++; next();
+        }, "image/jpeg", .95);
+      }).catch(function(){ host.remove(); toast("L'export a échoué.", 4000); });
+    }
+    setTimeout(next, 300); // laisse le temps aux images de se charger
+  });
+}
+function deliver(files){
+  hideToast();
+  if(navigator.canShare && navigator.canShare({files:files})){
+    navigator.share({files:files}).catch(function(){});
+    return;
+  }
+  files.forEach(function(f, k){
+    setTimeout(function(){
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(f); a.download = f.name;
+      document.body.appendChild(a); a.click(); a.remove();
+    }, k*400);
+  });
+  toast(files.length + " photo" + (files.length>1?"s":"") + " exportée" + (files.length>1?"s":""), 4000);
+}
+
 function doPrint(){
   if(!printList().length){ toast("Rien à imprimer."); return; }
   try{ window.print(); }catch(e){ toast("Impression impossible ici : ouvrez l'app depuis votre site GitHub."); }
@@ -1603,6 +1810,7 @@ function openSettings(){
   h += '<div class="sec" style="border:0;margin-top:0;padding-top:0">Cartes</div>';
   h += '<div class="grid2">'
      + '<div class="field"><span class="lab">Style</span><select id="sStyle"><option value="cute">Mignon</option><option value="classic">Classique</option></select></div>'
+     + '<div class="field"><span class="lab">Bordure (style mignon)</span><select id="sBorder"><option value="shine">Brillance douce</option><option value="sparkle">Brillance + paillettes</option><option value="dots">Pois</option><option value="plain">Unie</option></select></div>'
      + '<div class="field"><span class="lab">Attaque / Endurance</span><select id="sStat"><option value="round">Ronds avec épée et bouclier</option><option value="shape">Étoile ⭐ et bouclier 🛡️</option></select></div>'
      + '<div class="field"><span class="lab">Ami / Ennemi</span><select id="sMarker"><option value="sym">Visages 😊 / 😠</option><option value="ban">Bandeau AMI / ENNEMI</option><option value="none">Aucun</option></select></div>'
      + '<div class="field"><span class="lab">Bordure (mm)</span><input type="number" id="sFrame" step="0.5" min="0" max="10"></div>'
@@ -1634,6 +1842,8 @@ function openSettings(){
   }
   num("sFrame","frame",0,10); num("sW","cardW",20,200); num("sH","cardH",20,280); num("sG","gap",0,30); num("sT","top",0,60); num("sB","bleed",0,20); num("sC","comp",80,120);
   $("sStyle").onchange = function(){ P.style = this.value; saveP(); refresh(); };
+  $("sBorder").value = P.borderStyle || "shine";
+  $("sBorder").onchange = function(){ P.borderStyle = this.value; saveP(); refresh(); };
   var bo = P.bandOp !== undefined ? P.bandOp : (P.style==="cute" ? 100 : 95);
   $("sBo").value = bo; $("sBoV").textContent = bo + " %";
   $("sBo").oninput = function(){ P.bandOp = +this.value; $("sBoV").textContent = this.value + " %"; saveP(); refresh(); };
